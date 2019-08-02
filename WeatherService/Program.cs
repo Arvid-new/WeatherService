@@ -23,9 +23,10 @@ namespace WeatherService
             Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Debug()
                 .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
+                .MinimumLevel.Override("System", LogEventLevel.Information)
                 .Enrich.FromLogContext()
                 .WriteTo.Console(theme: SystemConsoleTheme.Colored)
-                .WriteTo.File( "Logs/log.txt", rollingInterval: RollingInterval.Day,
+                .WriteTo.File( "Logs/log.log", rollingInterval: RollingInterval.Day,
                     retainedFileCountLimit: 31, rollOnFileSizeLimit: true)
                 .CreateLogger();
 
