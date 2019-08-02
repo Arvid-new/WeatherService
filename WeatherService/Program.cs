@@ -25,7 +25,7 @@ namespace WeatherService
                 .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
                 .MinimumLevel.Override("System", LogEventLevel.Information)
                 .Enrich.FromLogContext()
-                .WriteTo.Console(theme: SystemConsoleTheme.Colored)
+                .WriteTo.Console()
                 .WriteTo.File( "Logs/log.log", rollingInterval: RollingInterval.Day,
                     retainedFileCountLimit: 31, rollOnFileSizeLimit: true)
                 .CreateLogger();
