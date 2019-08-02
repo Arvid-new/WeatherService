@@ -1,0 +1,89 @@
+2019-08-02 10:57:28.928 +03:00 [INF] Starting web host.
+2019-08-02 10:57:33.831 +03:00 [INF] User profile is available. Using 'C:\Users\nvidalis\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2019-08-02 10:57:35.539 +03:00 [INF] Request starting HTTP/1.1 DEBUG http://localhost:51016/  0
+2019-08-02 10:57:35.539 +03:00 [INF] Request starting HTTP/1.1 GET http://localhost:44349/api/weather  
+2019-08-02 10:57:35.697 +03:00 [INF] Request finished in 158.8379ms 200 
+2019-08-02 10:57:36.244 +03:00 [INF] Route matched with {action = "Get", controller = "Weather"}. Executing controller action with signature Microsoft.AspNetCore.Mvc.ActionResult`1[System.String] Get() on controller WeatherService.Controllers.WeatherController (WeatherService).
+2019-08-02 10:57:36.271 +03:00 [INF] Executing action method WeatherService.Controllers.WeatherController.Get (WeatherService) - Validation state: "Valid"
+2019-08-02 10:57:37.023 +03:00 [INF] Acquired weather from [default] OpenWeather
+2019-08-02 10:57:37.029 +03:00 [INF] Executed action method WeatherService.Controllers.WeatherController.Get (WeatherService), returned result Microsoft.AspNetCore.Mvc.JsonResult in 742.4016ms.
+2019-08-02 10:57:37.039 +03:00 [INF] Executing JsonResult, writing value of type 'WeatherService.Models.ResponseModel'.
+2019-08-02 10:57:37.075 +03:00 [INF] Executed action WeatherService.Controllers.WeatherController.Get (WeatherService) in 825.79590000000007ms
+2019-08-02 10:57:37.081 +03:00 [INF] Request finished in 1547.6817ms 200 application/json; charset=utf-8
+2019-08-02 10:57:41.763 +03:00 [INF] Request starting HTTP/1.1 GET http://localhost:44349/api/weather/2,37.9708407,23.8776373  
+2019-08-02 10:57:41.806 +03:00 [INF] Route matched with {action = "Get", controller = "Weather"}. Executing controller action with signature Microsoft.AspNetCore.Mvc.ActionResult`1[System.String] Get(Int32, Double, Double) on controller WeatherService.Controllers.WeatherController (WeatherService).
+2019-08-02 10:57:41.833 +03:00 [INF] Executing action method WeatherService.Controllers.WeatherController.Get (WeatherService) - Validation state: "Valid"
+2019-08-02 10:57:42.735 +03:00 [INF] Acquired weather from DarkSky
+2019-08-02 10:57:42.735 +03:00 [INF] Executed action method WeatherService.Controllers.WeatherController.Get (WeatherService), returned result Microsoft.AspNetCore.Mvc.JsonResult in 902.02690000000007ms.
+2019-08-02 10:57:42.736 +03:00 [INF] Executing JsonResult, writing value of type 'WeatherService.Models.ResponseModel'.
+2019-08-02 10:57:42.736 +03:00 [INF] Executed action WeatherService.Controllers.WeatherController.Get (WeatherService) in 930.195ms
+2019-08-02 10:57:42.737 +03:00 [INF] Request finished in 974.0867ms 200 application/json; charset=utf-8
+2019-08-02 10:57:50.116 +03:00 [INF] Request starting HTTP/1.1 GET http://localhost:44349/api/weather/2,-999.0,23.8776373  
+2019-08-02 10:57:50.117 +03:00 [INF] Route matched with {action = "Get", controller = "Weather"}. Executing controller action with signature Microsoft.AspNetCore.Mvc.ActionResult`1[System.String] Get(Int32, Double, Double) on controller WeatherService.Controllers.WeatherController (WeatherService).
+2019-08-02 10:57:50.117 +03:00 [INF] Executing action method WeatherService.Controllers.WeatherController.Get (WeatherService) - Validation state: "Valid"
+2019-08-02 10:57:50.118 +03:00 [INF] Executed action method WeatherService.Controllers.WeatherController.Get (WeatherService), returned result Microsoft.AspNetCore.Mvc.BadRequestObjectResult in 0.1184ms.
+2019-08-02 10:57:50.124 +03:00 [INF] Executing ObjectResult, writing value of type 'System.String'.
+2019-08-02 10:57:50.134 +03:00 [INF] Executed action WeatherService.Controllers.WeatherController.Get (WeatherService) in 17.416800000000002ms
+2019-08-02 10:57:50.134 +03:00 [INF] Request finished in 18.4675ms 400 text/plain; charset=utf-8
+2019-08-02 10:57:50.247 +03:00 [INF] Request starting HTTP/1.1 GET http://localhost:44349/favicon.ico  
+2019-08-02 10:57:50.248 +03:00 [INF] Request finished in 0.7618ms 404 
+2019-08-02 10:58:00.566 +03:00 [INF] Request starting HTTP/1.1 GET http://localhost:44349/api/weather/2,-999.0,23.8776373  
+2019-08-02 10:58:00.566 +03:00 [INF] Route matched with {action = "Get", controller = "Weather"}. Executing controller action with signature Microsoft.AspNetCore.Mvc.ActionResult`1[System.String] Get(Int32, Double, Double) on controller WeatherService.Controllers.WeatherController (WeatherService).
+2019-08-02 10:58:00.566 +03:00 [INF] Executing action method WeatherService.Controllers.WeatherController.Get (WeatherService) - Validation state: "Valid"
+2019-08-02 10:58:00.567 +03:00 [INF] Executed action method WeatherService.Controllers.WeatherController.Get (WeatherService), returned result Microsoft.AspNetCore.Mvc.BadRequestObjectResult in 0.0105ms.
+2019-08-02 10:58:00.567 +03:00 [INF] Executing ObjectResult, writing value of type 'System.String'.
+2019-08-02 10:58:00.567 +03:00 [INF] Executed action WeatherService.Controllers.WeatherController.Get (WeatherService) in 1.1257000000000001ms
+2019-08-02 10:58:00.568 +03:00 [INF] Request finished in 1.8155ms 400 text/plain; charset=utf-8
+2019-08-02 10:59:16.700 +03:00 [INF] Starting web host.
+2019-08-02 10:59:19.134 +03:00 [INF] User profile is available. Using 'C:\Users\nvidalis\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2019-08-02 10:59:20.584 +03:00 [INF] Request starting HTTP/1.1 DEBUG http://localhost:51016/  0
+2019-08-02 10:59:20.584 +03:00 [INF] Request starting HTTP/1.1 GET http://localhost:44349/api/weather  
+2019-08-02 10:59:20.676 +03:00 [INF] Request finished in 90.5918ms 200 
+2019-08-02 10:59:21.061 +03:00 [INF] Route matched with {action = "Get", controller = "Weather"}. Executing controller action with signature Microsoft.AspNetCore.Mvc.ActionResult`1[System.String] Get() on controller WeatherService.Controllers.WeatherController (WeatherService).
+2019-08-02 10:59:21.093 +03:00 [INF] Executing action method WeatherService.Controllers.WeatherController.Get (WeatherService) - Validation state: "Valid"
+2019-08-02 10:59:21.778 +03:00 [INF] Acquired weather from [default] OpenWeather
+2019-08-02 10:59:21.784 +03:00 [INF] Executed action method WeatherService.Controllers.WeatherController.Get (WeatherService), returned result Microsoft.AspNetCore.Mvc.JsonResult in 673.7193ms.
+2019-08-02 10:59:21.797 +03:00 [INF] Executing JsonResult, writing value of type 'WeatherService.Models.ResponseModel'.
+2019-08-02 10:59:21.839 +03:00 [INF] Executed action WeatherService.Controllers.WeatherController.Get (WeatherService) in 772.4841ms
+2019-08-02 10:59:21.845 +03:00 [INF] Request finished in 1265.1582ms 200 application/json; charset=utf-8
+2019-08-02 10:59:26.279 +03:00 [INF] Request starting HTTP/1.1 GET http://localhost:44349/api/weather/123123  
+2019-08-02 10:59:26.281 +03:00 [INF] Request finished in 1.3151ms 404 
+2019-08-02 10:59:31.275 +03:00 [INF] Request starting HTTP/1.1 GET http://localhost:44349/api/weather/123123  
+2019-08-02 10:59:31.276 +03:00 [INF] Request finished in 0.7751ms 404 
+2019-08-02 10:59:44.618 +03:00 [INF] Request starting HTTP/1.1 GET http://localhost:44349/api/weather/2,37.9708407,23.8776373  
+2019-08-02 10:59:44.649 +03:00 [INF] Route matched with {action = "Get", controller = "Weather"}. Executing controller action with signature Microsoft.AspNetCore.Mvc.ActionResult`1[System.String] Get(Int32, Double, Double) on controller WeatherService.Controllers.WeatherController (WeatherService).
+2019-08-02 10:59:44.674 +03:00 [INF] Executing action method WeatherService.Controllers.WeatherController.Get (WeatherService) - Validation state: "Valid"
+2019-08-02 10:59:45.582 +03:00 [INF] Acquired weather from DarkSky
+2019-08-02 10:59:45.583 +03:00 [INF] Executed action method WeatherService.Controllers.WeatherController.Get (WeatherService), returned result Microsoft.AspNetCore.Mvc.JsonResult in 908.2313ms.
+2019-08-02 10:59:45.584 +03:00 [INF] Executing JsonResult, writing value of type 'WeatherService.Models.ResponseModel'.
+2019-08-02 10:59:45.586 +03:00 [INF] Executed action WeatherService.Controllers.WeatherController.Get (WeatherService) in 936.53000000000009ms
+2019-08-02 10:59:45.586 +03:00 [INF] Request finished in 967.966ms 200 application/json; charset=utf-8
+2019-08-02 10:59:50.899 +03:00 [INF] Request starting HTTP/1.1 GET http://localhost:44349/api/weather/2-12312123,23.8776373  
+2019-08-02 10:59:50.899 +03:00 [INF] Request finished in 0.3537ms 404 
+2019-08-02 11:00:07.921 +03:00 [INF] Request starting HTTP/1.1 GET http://localhost:44349/api/weather/2,-12312123,23.8776373  
+2019-08-02 11:00:07.921 +03:00 [INF] Route matched with {action = "Get", controller = "Weather"}. Executing controller action with signature Microsoft.AspNetCore.Mvc.ActionResult`1[System.String] Get(Int32, Double, Double) on controller WeatherService.Controllers.WeatherController (WeatherService).
+2019-08-02 11:00:07.922 +03:00 [INF] Executing action method WeatherService.Controllers.WeatherController.Get (WeatherService) - Validation state: "Valid"
+2019-08-02 11:00:07.922 +03:00 [INF] Executed action method WeatherService.Controllers.WeatherController.Get (WeatherService), returned result Microsoft.AspNetCore.Mvc.BadRequestObjectResult in 0.1022ms.
+2019-08-02 11:00:07.929 +03:00 [INF] Executing ObjectResult, writing value of type 'System.String'.
+2019-08-02 11:00:07.931 +03:00 [INF] Executed action WeatherService.Controllers.WeatherController.Get (WeatherService) in 9.5602ms
+2019-08-02 11:00:07.931 +03:00 [INF] Request finished in 10.6278ms 400 text/plain; charset=utf-8
+2019-08-02 11:24:05.996 +03:00 [INF] Starting web host.
+2019-08-02 11:24:08.392 +03:00 [INF] User profile is available. Using 'C:\Users\nvidalis\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2019-08-02 11:24:09.728 +03:00 [INF] Request starting HTTP/1.1 DEBUG http://localhost:51016/  0
+2019-08-02 11:24:09.728 +03:00 [INF] Request starting HTTP/1.1 GET http://localhost:44349/api/weather  
+2019-08-02 11:24:09.896 +03:00 [INF] Request finished in 156.5537ms 200 
+2019-08-02 11:24:10.262 +03:00 [INF] Route matched with {action = "Get", controller = "Weather"}. Executing controller action with signature Microsoft.AspNetCore.Mvc.ActionResult`1[System.String] Get() on controller WeatherService.Controllers.WeatherController (WeatherService).
+2019-08-02 11:24:10.300 +03:00 [INF] Executing action method WeatherService.Controllers.WeatherController.Get (WeatherService) - Validation state: "Valid"
+2019-08-02 11:24:10.944 +03:00 [INF] Acquired weather from [default] OpenWeather
+2019-08-02 11:24:10.951 +03:00 [INF] Executed action method WeatherService.Controllers.WeatherController.Get (WeatherService), returned result Microsoft.AspNetCore.Mvc.JsonResult in 625.8773ms.
+2019-08-02 11:24:10.962 +03:00 [INF] Executing JsonResult, writing value of type 'WeatherService.Models.ResponseModel'.
+2019-08-02 11:24:10.995 +03:00 [INF] Executed action WeatherService.Controllers.WeatherController.Get (WeatherService) in 728.8012ms
+2019-08-02 11:24:11.004 +03:00 [INF] Request finished in 1284.9878ms 200 application/json; charset=utf-8
+2019-08-02 11:24:21.895 +03:00 [INF] Request starting HTTP/1.1 GET http://localhost:44349/api/weather/2,37.9708407,23.8776373  
+2019-08-02 11:24:21.917 +03:00 [INF] Route matched with {action = "Get", controller = "Weather"}. Executing controller action with signature Microsoft.AspNetCore.Mvc.ActionResult`1[System.String] Get(Int32, Double, Double) on controller WeatherService.Controllers.WeatherController (WeatherService).
+2019-08-02 11:24:21.944 +03:00 [INF] Executing action method WeatherService.Controllers.WeatherController.Get (WeatherService) - Validation state: "Valid"
+2019-08-02 11:24:22.861 +03:00 [INF] Acquired weather from DarkSky
+2019-08-02 11:24:22.862 +03:00 [INF] Executed action method WeatherService.Controllers.WeatherController.Get (WeatherService), returned result Microsoft.AspNetCore.Mvc.JsonResult in 917.3918ms.
+2019-08-02 11:24:22.862 +03:00 [INF] Executing JsonResult, writing value of type 'WeatherService.Models.ResponseModel'.
+2019-08-02 11:24:22.863 +03:00 [INF] Executed action WeatherService.Controllers.WeatherController.Get (WeatherService) in 945.7517ms
+2019-08-02 11:24:22.864 +03:00 [INF] Request finished in 968.9221ms 200 application/json; charset=utf-8
