@@ -5,6 +5,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Threading;
 using System.Threading.Tasks;
 using WeatherService.Models;
 
@@ -17,6 +18,9 @@ namespace WeatherService.WeatherProviders
         private const int UpdateMinutes = 120;
         private const int CallsPerMinute = 60;
         private const int BlockMinutes = 10;
+
+        private static readonly object Lock = new object();
+        private static readonly object Lock2 = new object();
 
         private bool Blocked = false;
         private DateTime LastBlocked;
@@ -32,17 +36,20 @@ namespace WeatherService.WeatherProviders
         {
             // Try to get weather from cache.
             ResponseModel response = GetWeatherFromCache(coords);
-            if (response != null)
+            lock (Lock2)
             {
-                if ((DateTime.UtcNow - response.CallTime).Minutes > UpdateMinutes) // Cached response is too old.
+                if (response != null)
                 {
-                    LogInfo("Cache removed: Too old. | Coords: " + coords);
-                    ResponseCache.TryRemove(coords, out _);
-                }
-                else
-                {
-                    LogInfo("Acquired weather from cache | Coords: " + coords);
-                    return response;
+                    if ((DateTime.UtcNow - response.CallTime).Minutes > UpdateMinutes) // Cached response is too old.
+                    {
+                        LogInfo("Cache removed: Too old. | Coords: " + coords);
+                        ResponseCache.TryRemove(coords, out _);
+                    }
+                    else
+                    {
+                        LogInfo("Acquired weather from cache | Coords: " + coords);
+                        return response;
+                    }
                 }
             }
 
@@ -56,11 +63,14 @@ namespace WeatherService.WeatherProviders
             if (result == null)
                 return null;
 
-            Calls++;
+            Interlocked.Increment(ref Calls);
             if (result.cod == "429") // 429 means we are blocked.
             {
-                Blocked = true;
-                LastBlocked = DateTime.UtcNow;
+                lock (Lock)
+                {
+                    Blocked = true;
+                    LastBlocked = DateTime.UtcNow;
+                }
                 return null;
             }
 
@@ -81,31 +91,34 @@ namespace WeatherService.WeatherProviders
         /// <returns></returns>
         private bool CheckAvailability()
         {
-            DateTime now = DateTime.UtcNow;
-            if ((now - LastCallsReset).TotalMinutes >= 1) // Reset calls.
+            lock (Lock)
             {
-                Calls = 0;
-                LastCallsReset = now;
-            }
-
-            if (Blocked)
-            {
-                if ((now - LastBlocked).TotalMinutes > BlockMinutes) // Block is over.
+                DateTime now = DateTime.UtcNow;
+                if ((now - LastCallsReset).TotalMinutes >= 1) // Reset calls.
                 {
-                    Blocked = false;
+                    Calls = 0;
+                    LastCallsReset = now;
                 }
-                else // Block is still active.
+
+                if (Blocked)
+                {
+                    if ((now - LastBlocked).TotalMinutes > BlockMinutes) // Block is over.
+                    {
+                        Blocked = false;
+                    }
+                    else // Block is still active.
+                    {
+                        return false;
+                    }
+                }
+
+                if (Calls >= CallsPerMinute - 1)
                 {
                     return false;
                 }
-            }
 
-            if (Calls >= CallsPerMinute - 1)
-            {
-                return false;
+                return true;
             }
-
-            return true;
         }
     }
 }

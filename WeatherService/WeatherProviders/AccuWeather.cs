@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
@@ -15,8 +16,8 @@ namespace WeatherService.WeatherProviders
         private const string WeatherAPICall = @"http://dataservice.accuweather.com/forecasts/v1/daily/5day/{0}?details=true&apikey={1}";
         private const int UpdateMinutes = 90;
 
-        private readonly Dictionary<Coords, AccuWeatherLocationModel> CoordsToLoc = new Dictionary<Coords, AccuWeatherLocationModel>();
-        private readonly Dictionary<string, ResponseModel> ResponseCache = new Dictionary<string, ResponseModel>();
+        private readonly ConcurrentDictionary<Coords, AccuWeatherLocationModel> CoordsToLoc = new ConcurrentDictionary<Coords, AccuWeatherLocationModel>();
+        private readonly ConcurrentDictionary<string, ResponseModel> ResponseCache = new ConcurrentDictionary<string, ResponseModel>();
 
         public AccuWeather(string name) : base(name) { }
 
@@ -28,7 +29,7 @@ namespace WeatherService.WeatherProviders
                 if ((DateTime.UtcNow - response.CallTime).Minutes > UpdateMinutes) // Cached response is too old.
                 {
                     LogInfo("Cache removed: Too old. | Coords: " + coords);
-                    ResponseCache.Remove(CoordsToLoc[coords].Key);
+                    ResponseCache.Remove(CoordsToLoc[coords].Key, out _);
                 }
                 else
                 {
@@ -45,7 +46,7 @@ namespace WeatherService.WeatherProviders
 
                 response = model.ToResponseModel(loc);
                 response.CallTime = DateTime.UtcNow;
-                ResponseCache.Add(loc.Key, response);
+                ResponseCache.TryAdd(loc.Key, response);
                 return response;
             }
 
@@ -54,7 +55,7 @@ namespace WeatherService.WeatherProviders
             if (locResult == null)
                 return null;
 
-            CoordsToLoc.Add(coords, locResult);
+            CoordsToLoc.TryAdd(coords, locResult);
 
             if (ResponseCache.TryGetValue(locResult.Key, out response)) // We have the weather.
             {
@@ -68,7 +69,7 @@ namespace WeatherService.WeatherProviders
 
             response = result.ToResponseModel(locResult);
             response.CallTime = DateTime.UtcNow;
-            ResponseCache.Add(locResult.Key, response);
+            ResponseCache.TryAdd(locResult.Key, response);
             return response;
         }
 
