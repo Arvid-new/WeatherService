@@ -20,7 +20,6 @@ namespace WeatherService.WeatherProviders
         private const int BlockMinutes = 10;
 
         private static readonly object Lock = new object();
-        private static readonly object Lock2 = new object();
 
         private bool Blocked = false;
         private DateTime LastBlocked;

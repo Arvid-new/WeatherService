@@ -19,28 +19,28 @@ namespace WeatherService.Controllers
     {
         private readonly ILogger<WeatherController> Logger;
         private readonly WeatherProviderManager WeatherManager;
-        private readonly UserService UserService;
 
-        public WeatherController(ILogger<WeatherController> logger, WeatherProviderManager weatherManager, UserService userService)
+        public WeatherController(ILogger<WeatherController> logger, WeatherProviderManager weatherManager)
         {
             Logger = logger;
             WeatherManager = weatherManager;
-            UserService = userService;
         }
 
         [AllowAnonymous]
         [HttpPost("authenticate")]
-        public async Task<ActionResult> Authenticate([FromBody]User userParam)
+        public async Task<ActionResult> Authenticate([FromServices]UserService userService, [FromBody]User userParam)
         {
-            var user = await UserService.AuthenticateAsync(userParam.Username, userParam.Password);
+            var user = await userService.AuthenticateAsync(userParam.Username, userParam.Password);
 
             if (user == null)
                 return BadRequest(new { message = "Username or password is incorrect" });
 
+            Logger.LogInformation("User [{0}] has been successfully authenticated.", userParam.Username);
             return Ok(user.Token);
         }
 
         [HttpGet]
+        [ResponseCache(CacheProfileName = "DefaultWeather")]
         public async Task<ActionResult> Get() // Used for testing currently.
         {
             var provider = WeatherManager.GetWeatherProvider(WeatherProvider.OpenWeather);
@@ -56,6 +56,7 @@ namespace WeatherService.Controllers
         }
 
         [HttpGet("{provId},{lat},{lon}")]
+        [ResponseCache(CacheProfileName = "DefaultWeather")]
         public async Task<ActionResult> Get(int provId, double lat, double lon)
         {
             if (!Coords.ValidateCoords(lat, lon))

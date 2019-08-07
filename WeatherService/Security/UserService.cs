@@ -24,9 +24,9 @@ namespace WeatherService.Security
         {
             return Task.Run(() =>
             {
-                var user = SecurityConfig.Users.SingleOrDefault(x => x.Username == username && BCrypt.Net.BCrypt.Verify(password, x.Password));
+                var user = SecurityConfig.Users.FirstOrDefault(x => x.Username == username);
 
-                if (user == null)
+                if (user == null || !BCrypt.Net.BCrypt.Verify(password, user.Password))
                     return null;
 
                 // Authentication successful so generate jwt token.
@@ -36,7 +36,7 @@ namespace WeatherService.Security
                 {
                     Subject = new ClaimsIdentity(new Claim[]
                     {
-                    new Claim(ClaimTypes.Name, user.Id.ToString())
+                        new Claim(ClaimTypes.Name, user.Id.ToString())
                     }),
                     Expires = DateTime.UtcNow.AddDays(7),
                     SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
