@@ -36,20 +36,17 @@ namespace WeatherService.WeatherProviders
         {
             // Try to get weather from cache.
             ResponseModel response = GetWeatherFromCache(coords);
-            lock (Lock2)
+            if (response != null)
             {
-                if (response != null)
+                if ((DateTime.UtcNow - response.CallTime).Minutes > UpdateMinutes) // Cached response is too old.
                 {
-                    if ((DateTime.UtcNow - response.CallTime).Minutes > UpdateMinutes) // Cached response is too old.
-                    {
-                        LogInfo("Cache removed: Too old. | Coords: " + coords);
-                        ResponseCache.TryRemove(coords, out _);
-                    }
-                    else
-                    {
-                        LogInfo("Acquired weather from cache | Coords: " + coords);
-                        return response;
-                    }
+                    LogInfo("Cache removed: Too old. | Coords: " + coords);
+                    ResponseCache.TryRemove(coords, out _);
+                }
+                else
+                {
+                    LogInfo("Acquired weather from cache | Coords: " + coords);
+                    return response;
                 }
             }
 
