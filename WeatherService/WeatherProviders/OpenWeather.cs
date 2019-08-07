@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
@@ -23,11 +24,11 @@ namespace WeatherService.WeatherProviders
         private int Calls = 0;
         private DateTime LastCallsReset = DateTime.UtcNow;
 
-        private readonly Dictionary<Coords, ResponseModel> ResponseCache = new Dictionary<Coords, ResponseModel>();
+        private readonly ConcurrentDictionary<Coords, ResponseModel> ResponseCache = new ConcurrentDictionary<Coords, ResponseModel>();
 
         public OpenWeather(string name) : base(name) { }
 
-        public override ResponseModel GetWeather(Coords coords)
+        public override async Task<ResponseModel> GetWeatherAsync(Coords coords)
         {
             // Try to get weather from cache.
             ResponseModel response = GetWeatherFromCache(coords);
@@ -36,7 +37,7 @@ namespace WeatherService.WeatherProviders
                 if ((DateTime.UtcNow - response.CallTime).Minutes > UpdateMinutes) // Cached response is too old.
                 {
                     LogInfo("Cache removed: Too old. | Coords: " + coords);
-                    ResponseCache.Remove(coords);
+                    ResponseCache.TryRemove(coords, out _);
                 }
                 else
                 {
@@ -51,7 +52,7 @@ namespace WeatherService.WeatherProviders
                 return null;
             }
 
-            OpenWeatherModel result = CallFormatAsync<OpenWeatherModel>(APICall, coords.LatText, coords.LonText, Key).Result;
+            OpenWeatherModel result = await CallFormatAsync<OpenWeatherModel>(APICall, coords.LatText, coords.LonText, Key);
             if (result == null)
                 return null;
 
@@ -65,7 +66,7 @@ namespace WeatherService.WeatherProviders
 
             response = result.ToResponseModel();
             response.CallTime = DateTime.UtcNow;
-            ResponseCache.Add(coords, response);
+            ResponseCache.TryAdd(coords, response);
             return response;
         }
 

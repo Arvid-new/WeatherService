@@ -20,7 +20,7 @@ namespace WeatherService.WeatherProviders
 
         public AccuWeather(string name) : base(name) { }
 
-        public override ResponseModel GetWeather(Coords coords)
+        public override async Task<ResponseModel> GetWeatherAsync(Coords coords)
         {
             ResponseModel response = GetWeatherFromCache(coords);
             if (response != null) // We have both the location key and the weather.
@@ -39,7 +39,7 @@ namespace WeatherService.WeatherProviders
 
             if (CoordsToLoc.TryGetValue(coords, out AccuWeatherLocationModel loc)) // We have the location key and we want the weather.
             {
-                AccuWeatherModel model = WeatherCall(loc.Key).Result;
+                AccuWeatherModel model = await WeatherCall(loc.Key);
                 if (model == null)
                     return null;
 
@@ -50,7 +50,7 @@ namespace WeatherService.WeatherProviders
             }
 
             // We don't have the location key. Maybe we have the weather.
-            AccuWeatherLocationModel locResult = LocationCall(coords).Result;
+            AccuWeatherLocationModel locResult = await LocationCall(coords);
             if (locResult == null)
                 return null;
 
@@ -62,7 +62,7 @@ namespace WeatherService.WeatherProviders
             }
 
             // We don't have the weather.
-            AccuWeatherModel result = WeatherCall(locResult.Key).Result;
+            AccuWeatherModel result = await WeatherCall(locResult.Key);
             if (result == null)
                 return null;
 

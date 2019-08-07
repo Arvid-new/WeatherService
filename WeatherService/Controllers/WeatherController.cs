@@ -6,31 +6,48 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using WeatherService.Security;
+using WeatherService.Entities;
 using WeatherService.WeatherProviders;
 
 namespace WeatherService.Controllers
 {
+    //[Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class WeatherController : ControllerBase
     {
         private readonly ILogger<WeatherController> Logger;
         private readonly WeatherProviderManager WeatherManager;
+        private UserService UserService;
 
-        public WeatherController(ILogger<WeatherController> logger, WeatherProviderManager weatherManager)
+        public WeatherController(ILogger<WeatherController> logger, WeatherProviderManager weatherManager, UserService userService)
         {
             Logger = logger;
             WeatherManager = weatherManager;
+            UserService = userService;
+        }
+
+        [AllowAnonymous]
+        [HttpPost("authenticate")]
+        public ActionResult Authenticate([FromBody]User userParam)
+        {
+            var user = UserService.Authenticate(userParam.Username, userParam.Password);
+
+            if (user == null)
+                return BadRequest(new { message = "Username or password is incorrect" });
+
+            return Ok(user);
         }
 
         [HttpGet]
-        public ActionResult<string> Get() // Used for testing currently.
+        public async Task<ActionResult> Get() // Used for testing currently.
         {
             var provider = WeatherManager.GetWeatherProvider(WeatherProvider.OpenWeather);
             if (provider == null)
                 return StatusCode((int)HttpStatusCode.ServiceUnavailable, "Access to this provider has been disabled.");
 
-            var weather = provider.GetWeather(new Coords(38.0831702, 23.792224));
+            var weather = await provider.GetWeatherAsync(new Coords(38.0831702, 23.792224));
             if (weather == null)
                 return StatusCode((int)HttpStatusCode.ServiceUnavailable, "Failed to get weather from provider.");
 
@@ -39,7 +56,7 @@ namespace WeatherService.Controllers
         }
 
         [HttpGet("{provId},{lat},{lon}")]
-        public ActionResult<string> Get(int provId, double lat, double lon)
+        public async Task<ActionResult> Get(int provId, double lat, double lon)
         {
             if (!Coords.ValidateCoords(lat, lon))
                 return BadRequest("The coordinates are invalid.");
@@ -51,7 +68,7 @@ namespace WeatherService.Controllers
             if (provider == null)
                 return StatusCode((int)HttpStatusCode.ServiceUnavailable, "Access to this provider has been disabled.");
 
-            var weather = provider.GetWeather(new Coords(lat, lon));
+            var weather = await provider.GetWeatherAsync(new Coords(lat, lon));
             if (weather == null)
                 return StatusCode((int)HttpStatusCode.ServiceUnavailable, "Failed to get weather from provider.");
 

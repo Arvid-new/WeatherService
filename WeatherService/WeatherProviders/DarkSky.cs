@@ -1,6 +1,8 @@
-﻿using Newtonsoft.Json;
+﻿using Microsoft.Extensions.Caching.Memory;
+using Newtonsoft.Json;
 using Serilog;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -16,11 +18,11 @@ namespace WeatherService.WeatherProviders
         private const string APICall = @"https://api.darksky.net/forecast/{0}/{1},{2}?exclude=minutely,alerts";
         private const int UpdateMinutes = 70;
 
-        private readonly Dictionary<Coords, ResponseModel> ResponseCache = new Dictionary<Coords, ResponseModel>();
+        private readonly ConcurrentDictionary<Coords, ResponseModel> ResponseCache = new ConcurrentDictionary<Coords, ResponseModel>();
 
         public DarkSky(string name) : base(name) { }
 
-        public override ResponseModel GetWeather(Coords coords)
+        public override async Task<ResponseModel> GetWeatherAsync(Coords coords)
         {
             // Try to get weather from cache.
             ResponseModel response = GetWeatherFromCache(coords);
@@ -29,7 +31,7 @@ namespace WeatherService.WeatherProviders
                 if ((DateTime.UtcNow - response.CallTime).Minutes > UpdateMinutes) // Cached response is too old.
                 {
                     LogInfo("Cache removed: Too old. | Coords: " + coords);
-                    ResponseCache.Remove(coords);
+                    ResponseCache.TryRemove(coords, out _);
                 }
                 else
                 {
@@ -38,13 +40,13 @@ namespace WeatherService.WeatherProviders
                 }
             }
 
-            DarkSkyModel result = CallFormatAsync<DarkSkyModel>(APICall, Key, coords.LatText, coords.LonText).Result;
+            DarkSkyModel result = await CallFormatAsync<DarkSkyModel>(APICall, Key, coords.LatText, coords.LonText);
             if (result == null)
                 return null;
 
             response = result.ToResponseModel();
             response.CallTime = DateTime.UtcNow;
-            ResponseCache.Add(coords, response);
+            ResponseCache.TryAdd(coords, response);
             return response;
         }
 

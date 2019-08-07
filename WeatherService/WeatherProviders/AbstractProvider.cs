@@ -51,7 +51,7 @@ namespace WeatherService.WeatherProviders
             Name = name;
         }
 
-        public abstract ResponseModel GetWeather(Coords coords);
+        public abstract Task<ResponseModel> GetWeatherAsync(Coords coords);
 
         public void LogInfo(string message)
         {
