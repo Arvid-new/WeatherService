@@ -19,7 +19,7 @@ namespace WeatherService.Controllers
     {
         private readonly ILogger<WeatherController> Logger;
         private readonly WeatherProviderManager WeatherManager;
-        private UserService UserService;
+        private readonly UserService UserService;
 
         public WeatherController(ILogger<WeatherController> logger, WeatherProviderManager weatherManager, UserService userService)
         {
@@ -30,14 +30,14 @@ namespace WeatherService.Controllers
 
         [AllowAnonymous]
         [HttpPost("authenticate")]
-        public ActionResult Authenticate([FromBody]User userParam)
+        public async Task<ActionResult> Authenticate([FromBody]User userParam)
         {
-            var user = UserService.Authenticate(userParam.Username, userParam.Password);
+            var user = await UserService.AuthenticateAsync(userParam.Username, userParam.Password);
 
             if (user == null)
                 return BadRequest(new { message = "Username or password is incorrect" });
 
-            return Ok(user);
+            return Ok(user.Token);
         }
 
         [HttpGet]

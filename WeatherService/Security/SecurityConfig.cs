@@ -2,11 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using WeatherService.Entities;
 
-namespace WeatherService
+namespace WeatherService.Security
 {
-    public class AppSettings
+    public class SecurityConfig
     {
         public string Secret { get; set; }
+        public User[] Users { get; set; }
     }
 }

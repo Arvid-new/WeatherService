@@ -31,11 +31,11 @@ namespace WeatherService
         public void ConfigureServices(IServiceCollection services)
         {
             // configure strongly typed settings objects
-            var appSettingsSection = Configuration.GetSection("AppSettings");
-            services.Configure<AppSettings>(appSettingsSection);
+            var appSettingsSection = Configuration.GetSection("SecurityConfig");
+            services.Configure<SecurityConfig>(appSettingsSection);
 
             // configure jwt authentication
-            var appSettings = appSettingsSection.Get<AppSettings>();
+            var appSettings = appSettingsSection.Get<SecurityConfig>();
             var key = Encoding.ASCII.GetBytes(appSettings.Secret);
             services.AddAuthentication(x =>
             {

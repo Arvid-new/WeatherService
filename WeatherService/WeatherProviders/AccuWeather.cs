@@ -85,14 +85,14 @@ namespace WeatherService.WeatherProviders
             return null;
         }
 
-        private async Task<AccuWeatherLocationModel> LocationCall(Coords coords)
+        private Task<AccuWeatherLocationModel> LocationCall(Coords coords)
         {
-            return await CallFormatAsync<AccuWeatherLocationModel>(LocationAPICall, coords.LatText, coords.LonText, Key);
+            return CallFormatAsync<AccuWeatherLocationModel>(LocationAPICall, coords.LatText, coords.LonText, Key);
         }
 
-        private async Task<AccuWeatherModel> WeatherCall(string locationID)
+        private Task<AccuWeatherModel> WeatherCall(string locationID)
         {
-            return await CallFormatAsync<AccuWeatherModel>(WeatherAPICall, locationID, Key);
+            return CallFormatAsync<AccuWeatherModel>(WeatherAPICall, locationID, Key);
         }
     }
 }

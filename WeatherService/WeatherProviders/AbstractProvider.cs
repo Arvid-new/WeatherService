@@ -58,9 +58,9 @@ namespace WeatherService.WeatherProviders
             Log.Information($"{Name}: {message}");
         }
 
-        protected async Task<T> CallFormatAsync<T>(string requestUri, params object[] args) where T : class
+        protected Task<T> CallFormatAsync<T>(string requestUri, params object[] args) where T : class
         {
-            return await CallAsync<T>(string.Format(requestUri, args));
+            return CallAsync<T>(string.Format(requestUri, args));
         }
 
         protected async Task<T> CallAsync<T>(string requestUri) where T : class

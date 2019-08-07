@@ -7,9 +7,9 @@ namespace WeatherService.Entities
 {
     public class User
     {
-        public int Id;
-        public string Username;
-        public string Password;
+        public int Id { get; set; }
+        public string Username { get; set; }
+        public string Password { get; set; }
         public string Token;
     }
 }
