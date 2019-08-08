@@ -75,6 +75,7 @@ namespace WeatherService.Models
         {
             ResponseModel response = new ResponseModel()
             {
+                Provider = "AccuWeather",
                 CityName = locModel.EnglishName,
                 Coords = new Coords(locModel.geoPosition.Latitude, locModel.geoPosition.Longitude),
                 Country = locModel.country.ID,
@@ -86,9 +87,9 @@ namespace WeatherService.Models
                 response.Forecasts[i] = new ResponseModel.Forecast
                 {
                     Date = DailyForecasts[i].EpochDate,
-                    DateText = DailyForecasts[i].Date,
-                    Temp = DailyForecasts[i].temperature.Minimum.Value.HasValue && DailyForecasts[i].temperature.Maximum.Value.HasValue ? (float?)((DailyForecasts[i].temperature.Minimum.Value + DailyForecasts[i].temperature.Maximum.Value) / 2) : null,
-                    //Humidity = DailyForecasts[i],
+                    TempMax = (float)DailyForecasts[i].temperature.Maximum.Value,
+                    TempMin = (float)DailyForecasts[i].temperature.Minimum.Value,
+                    //Humidity = DailyForecasts[i].,
                     WeatherType = DailyForecasts[i].Day.IconPhrase,
                     WeatherDescription = DailyForecasts[i].Day.ShortPhrase,
                     Cloudiness = DailyForecasts[i].Day.CloudCover,

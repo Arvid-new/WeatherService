@@ -80,31 +80,61 @@ namespace WeatherService.Models
 
         public OpenWeatherModel() { }
 
-        public ResponseModel ToResponseModel()
+        public ResponseModel ToResponseModel(OpenWeatherCurrentModel current)
         {
             ResponseModel response = new ResponseModel()
             {
+                Provider = "OpenWeather",
                 CityName = city.name,
-                Coords = new WeatherProviders.Coords(city.coord.lat, city.coord.lon),
                 Country = city.country,
-                Forecasts = new ResponseModel.Forecast[list.Length]
+                Coords = new WeatherProviders.Coords(city.coord.lat, city.coord.lon),
+                Now = new ResponseModel.Current()
+                {
+                    Date = current.dt,
+                    Temp = current.main.temp,
+                    Humidity = current.main.humidity,
+                    WeatherType = current.weather[0].main,
+                    WeatherDescription = current.weather[0].description,
+                    Cloudiness = current.clouds.all,
+                    WindSpeed = current.wind.speed,
+                    WindDeg = current.wind.deg
+                },
+                Forecasts = new ResponseModel.Forecast[5]
             };
 
-            for (int i = 0; i < list.Length; i++)
+            for (int i = 0; i < response.Forecasts.Length; i++)
             {
-                response.Forecasts[i] = new ResponseModel.Forecast
+                int j = i * 8;
+
+                ResponseModel.Forecast forecast = response.Forecasts[i] = new ResponseModel.Forecast
                 {
-                    Date = list[i].dt,
-                    DateText = list[i].dt_txt,
-                    Temp = list[i].main.temp,
-                    //Pressure = list[i].main.pressure,
-                    //Humidity = list[i].main.humidity,
-                    WeatherType = list[i].weather[0].main,
-                    WeatherDescription = list[i].weather[0].description,
-                    Cloudiness = list[i].clouds.all,
-                    WindSpeed = list[i].wind.speed,
-                    WindDeg = list[i].wind.deg
+                    Date = list[j].dt,
+                    TempMax = float.MinValue,
+                    TempMin = float.MaxValue,
+                    Humidity = list[j].main.humidity,
+                    WeatherType = list[j].weather[0].main,
+                    WeatherDescription = list[j].weather[0].description,
+                    Cloudiness = list[j].clouds.all,
+                    WindSpeed = list[j].wind.speed,
+                    WindDeg = list[j].wind.deg
                 };
+
+                j++;
+                int count = 1;
+                for (; j < i * 8 + 8; j++)
+                {
+                    if (list[j].main.temp < forecast.TempMin)
+                        forecast.TempMin = list[j].main.temp;
+
+                    if (list[j].main.temp > forecast.TempMax)
+                        forecast.TempMax = list[j].main.temp;
+
+                    forecast.Humidity += (list[j].main.humidity - forecast.Humidity) / count;
+                    forecast.Cloudiness += (list[j].clouds.all - forecast.Cloudiness) / count;
+                    forecast.WindSpeed += (list[j].wind.speed - forecast.WindSpeed) / count;
+
+                    count++;
+                }
             }
 
             return response;

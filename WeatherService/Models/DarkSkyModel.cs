@@ -122,9 +122,21 @@ namespace WeatherService.Models
         {
             ResponseModel response = new ResponseModel()
             {
+                Provider = "DarkSky",
                 CityName = "",
                 Coords = new WeatherProviders.Coords(latitude, longitude),
                 Country = "",
+                Now = new ResponseModel.Current()
+                {
+                    Date = currently.time,
+                    Temp = currently.temperature,
+                    Humidity = currently.humidity,
+                    Cloudiness = (int)(currently.cloudCover * 100),
+                    WeatherType = currently.icon,
+                    WeatherDescription = currently.summary,
+                    WindSpeed = currently.windSpeed,
+                    WindDeg = currently.windBearing
+                },
                 Forecasts = new ResponseModel.Forecast[daily.data.Length]
             };
 
@@ -133,10 +145,9 @@ namespace WeatherService.Models
                 response.Forecasts[i] = new ResponseModel.Forecast
                 {
                     Date = daily.data[i].time,
-                    DateText = "",
-                    Temp = (daily.data[i].temperatureHigh + daily.data[i].temperatureLow) / 2,
-                    //Pressure = list[i].main.pressure,
-                    //Humidity = list[i].main.humidity,
+                    TempMax = daily.data[i].temperatureMax,
+                    TempMin = daily.data[i].temperatureMin,
+                    Humidity = daily.data[i].humidity,
                     WeatherType = daily.data[i].icon,
                     WeatherDescription = daily.data[i].summary,
                     Cloudiness = (int)(daily.data[i].cloudCover * 100),

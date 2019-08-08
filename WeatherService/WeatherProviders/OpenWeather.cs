@@ -14,7 +14,8 @@ namespace WeatherService.WeatherProviders
     public class OpenWeather : AbstractProvider
     {
         private const string Key = "423bfce432ab364947047977e369fabe";
-        private const string APICall = @"http://api.openweathermap.org/data/2.5/forecast?lat={0}&lon={1}&APPID={2}";
+        private const string HourlyAPICall = @"http://api.openweathermap.org/data/2.5/forecast?lat={0}&lon={1}&APPID={2}";
+        private const string CurrentAPICall = @"http://api.openweathermap.org/data/2.5/weather?lat={0}&lon={1}&APPID={2}";
         private const int UpdateMinutes = 120;
         private const int CallsPerMinute = 60;
         private const int BlockMinutes = 10;
@@ -55,12 +56,16 @@ namespace WeatherService.WeatherProviders
                 return null;
             }
 
-            OpenWeatherModel result = await CallFormatAsync<OpenWeatherModel>(APICall, coords.LatText, coords.LonText, Key);
-            if (result == null)
+            OpenWeatherModel hourly = await CallFormatAsync<OpenWeatherModel>(HourlyAPICall, coords.LatText, coords.LonText, Key);
+            if (hourly == null)
                 return null;
 
-            Interlocked.Increment(ref Calls);
-            if (result.cod == "429") // 429 means we are blocked.
+            OpenWeatherCurrentModel current = await CallFormatAsync<OpenWeatherCurrentModel>(CurrentAPICall, coords.LatText, coords.LonText, Key);
+            if (current == null)
+                return null;
+
+            Interlocked.Add(ref Calls, 2);
+            if (hourly.cod == "429" || current.cod == 429) // 429 means we are blocked.
             {
                 lock (Lock)
                 {
@@ -70,7 +75,7 @@ namespace WeatherService.WeatherProviders
                 return null;
             }
 
-            response = result.ToResponseModel();
+            response = hourly.ToResponseModel(current);
             response.CallTime = DateTime.UtcNow;
             ResponseCache.TryAdd(coords, response);
             return response;

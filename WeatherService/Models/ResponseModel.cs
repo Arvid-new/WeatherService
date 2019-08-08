@@ -9,18 +9,32 @@ namespace WeatherService.Models
     public class ResponseModel
     {
         public DateTime CallTime;
+        public string Provider;
 
         public string CityName;
-        public Coords Coords;
         public string Country;
+        public Coords Coords;
+
+        public class Current
+        {
+            public long Date;
+            public float Temp;
+            public float Humidity;
+            public string WeatherType;
+            public string WeatherDescription;
+            public int Cloudiness;
+            public float WindSpeed;
+            public float WindDeg;
+        }
+
+        public Current Now;
 
         public class Forecast
         {
             public long Date;
-            public string DateText;
-            public float? Temp;
-            //public float Pressure;
-            //public float Humidity;
+            public float TempMin;
+            public float TempMax;
+            public float Humidity;
             public string WeatherType;
             public string WeatherDescription;
             public int Cloudiness;
