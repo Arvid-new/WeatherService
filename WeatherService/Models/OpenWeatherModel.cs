@@ -99,7 +99,7 @@ namespace WeatherService.Models
                     WindSpeed = current.wind.speed,
                     WindDeg = current.wind.deg
                 },
-                Forecasts = new ResponseModel.Forecast[5]
+                Forecasts = new ResponseModel.Forecast[list.Length / 8]
             };
 
             for (int i = 0; i < response.Forecasts.Length; i++)
@@ -119,10 +119,11 @@ namespace WeatherService.Models
                     WindDeg = list[j].wind.deg
                 };
 
-                j++;
                 int count = 1;
-                for (; j < i * 8 + 8; j++)
+                for (++j; j < i * 8 + 8; j++)
                 {
+                    count++;
+
                     if (list[j].main.temp < forecast.TempMin)
                         forecast.TempMin = list[j].main.temp;
 
@@ -132,8 +133,6 @@ namespace WeatherService.Models
                     forecast.Humidity += (list[j].main.humidity - forecast.Humidity) / count;
                     forecast.Cloudiness += (list[j].clouds.all - forecast.Cloudiness) / count;
                     forecast.WindSpeed += (list[j].wind.speed - forecast.WindSpeed) / count;
-
-                    count++;
                 }
             }
 
