@@ -28,15 +28,15 @@ namespace WeatherService.Models
             public string Date;
             public long EpochDate;
 
+            public class Values
+            {
+                public double? Value;
+                public string Unit;
+                public int UnitType;
+            }
+
             public class Temperature
             {
-                public class Values
-                {
-                    public double? Value;
-                    public string Unit;
-                    public int UnitType;
-                }
-
                 public Values Minimum;
                 public Values Maximum;
             }
@@ -53,8 +53,16 @@ namespace WeatherService.Models
 
                 public class Wind
                 {
-                    public Temperature.Values Speed;
-                    public Temperature.Values Direction;
+                    public Values Speed;
+
+                    public class Direction
+                    {
+                        public double Degrees;
+                        public string Localized;
+                        public string English;
+                    }
+
+                    public Direction direction;
                 }
 
                 public Wind wind;
@@ -71,7 +79,7 @@ namespace WeatherService.Models
 
         public Forecast[] DailyForecasts;
 
-        public ResponseModel ToResponseModel(AccuWeatherLocationModel locModel)
+        public ResponseModel ToResponseModel(AccuWeatherLocationModel locModel, AccuWeatherCurrentModel current)
         {
             ResponseModel response = new ResponseModel()
             {
@@ -79,6 +87,17 @@ namespace WeatherService.Models
                 CityName = locModel.EnglishName,
                 Coords = new Coords(locModel.geoPosition.Latitude, locModel.geoPosition.Longitude),
                 Country = locModel.country.ID,
+                Now = new ResponseModel.Current()
+                {
+                    Date = current.EpochTime,
+                    Temp = (float?)current.Temperature.Metric.value,
+                    Cloudiness = current.CloudCover,
+                    Humidity = current.RelativeHumidity,
+                    WeatherDescription = current.WeatherText,
+                    WeatherType = current.WeatherIcon.ToString(),
+                    WindDeg = (float?)current.wind.direction.Degrees,
+                    WindSpeed = (float?)current.wind.Speed.Metric.value
+                },
                 Forecasts = new ResponseModel.Forecast[DailyForecasts.Length]
             };
 
@@ -94,7 +113,7 @@ namespace WeatherService.Models
                     WeatherDescription = DailyForecasts[i].Day.ShortPhrase,
                     Cloudiness = DailyForecasts[i].Day.CloudCover,
                     WindSpeed = (float?)DailyForecasts[i].Day.wind.Speed.Value,
-                    WindDeg = (float?)DailyForecasts[i].Day.wind.Direction.Value
+                    WindDeg = (float?)DailyForecasts[i].Day.wind.direction.Degrees
                 };
             }
 

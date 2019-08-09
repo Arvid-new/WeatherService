@@ -123,9 +123,9 @@ namespace WeatherService.Models
             ResponseModel response = new ResponseModel()
             {
                 Provider = "DarkSky",
-                CityName = "",
+                CityName = null,
                 Coords = new WeatherProviders.Coords(latitude, longitude),
-                Country = "",
+                Country = null,
                 Now = new ResponseModel.Current()
                 {
                     Date = currently.time,

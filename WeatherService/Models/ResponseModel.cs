@@ -18,13 +18,13 @@ namespace WeatherService.Models
         public class Current
         {
             public long Date;
-            public float Temp;
-            public float Humidity;
+            public float? Temp;
+            public float? Humidity;
             public string WeatherType;
             public string WeatherDescription;
-            public int Cloudiness;
-            public float WindSpeed;
-            public float WindDeg;
+            public int? Cloudiness;
+            public float? WindSpeed;
+            public float? WindDeg;
         }
 
         public Current Now;
@@ -32,12 +32,12 @@ namespace WeatherService.Models
         public class Forecast
         {
             public long Date;
-            public float TempMin;
-            public float TempMax;
-            public float Humidity;
+            public float? TempMin;
+            public float? TempMax;
+            public float? Humidity;
             public string WeatherType;
             public string WeatherDescription;
-            public int Cloudiness;
+            public int? Cloudiness;
             public float? WindSpeed;
             public float? WindDeg;
         }

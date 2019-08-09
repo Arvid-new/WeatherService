@@ -15,7 +15,7 @@ namespace WeatherService.WeatherProviders
     public class DarkSky : AbstractProvider
     {
         private const string Key = "ea2a68cad3fd31088bc61197be2944bd";
-        private const string APICall = @"https://api.darksky.net/forecast/{0}/{1},{2}?exclude=minutely,alerts";
+        private const string APICall = @"https://api.darksky.net/forecast/{0}/{1},{2}?exclude=minutely,hourly,alerts";
         private const int UpdateMinutes = 70;
 
         private readonly ConcurrentDictionary<Coords, ResponseModel> ResponseCache = new ConcurrentDictionary<Coords, ResponseModel>();

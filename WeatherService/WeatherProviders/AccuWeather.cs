@@ -14,6 +14,7 @@ namespace WeatherService.WeatherProviders
         private const string Key = "it3AiVlpDhiEmV47sHlv8GW3Xs8vvaAG ";
         private const string LocationAPICall = @"http://dataservice.accuweather.com/locations/v1/cities/geoposition/search?q={0},{1}&apikey={2}";
         private const string WeatherAPICall = @"http://dataservice.accuweather.com/forecasts/v1/daily/5day/{0}?details=true&apikey={1}";
+        private const string CurrentAPICall = @"http://dataservice.accuweather.com/currentconditions/v1/{0}?details=true&apikey={1}";
         private const int UpdateMinutes = 90;
 
         private readonly ConcurrentDictionary<Coords, AccuWeatherLocationModel> CoordsToLoc = new ConcurrentDictionary<Coords, AccuWeatherLocationModel>();
@@ -40,11 +41,15 @@ namespace WeatherService.WeatherProviders
 
             if (CoordsToLoc.TryGetValue(coords, out AccuWeatherLocationModel loc)) // We have the location key and we want the weather.
             {
-                AccuWeatherModel model = await WeatherCall(loc.Key);
-                if (model == null)
+                AccuWeatherModel daily = await WeatherCall(loc.Key);
+                if (daily == null)
                     return null;
 
-                response = model.ToResponseModel(loc);
+                AccuWeatherCurrentModel[] current = await CurrentWeatherCall(loc.Key);
+                if (current == null)
+                    return null;
+
+                response = daily.ToResponseModel(loc, current[0]);
                 response.CallTime = DateTime.UtcNow;
                 ResponseCache.TryAdd(loc.Key, response);
                 return response;
@@ -63,11 +68,15 @@ namespace WeatherService.WeatherProviders
             }
 
             // We don't have the weather.
-            AccuWeatherModel result = await WeatherCall(locResult.Key);
-            if (result == null)
+            AccuWeatherModel daily2 = await WeatherCall(locResult.Key);
+            if (daily2 == null)
                 return null;
 
-            response = result.ToResponseModel(locResult);
+            AccuWeatherCurrentModel[] current2 = await CurrentWeatherCall(locResult.Key);
+            if (current2 == null)
+                return null;
+
+            response = daily2.ToResponseModel(locResult, current2[0]);
             response.CallTime = DateTime.UtcNow;
             ResponseCache.TryAdd(locResult.Key, response);
             return response;
@@ -93,6 +102,11 @@ namespace WeatherService.WeatherProviders
         private Task<AccuWeatherModel> WeatherCall(string locationID)
         {
             return CallFormatAsync<AccuWeatherModel>(WeatherAPICall, locationID, Key);
+        }
+
+        private Task<AccuWeatherCurrentModel[]> CurrentWeatherCall(string locationID)
+        {
+            return CallFormatAsync<AccuWeatherCurrentModel[]>(CurrentAPICall, locationID, Key);
         }
     }
 }
