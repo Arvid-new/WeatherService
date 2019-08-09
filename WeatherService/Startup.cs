@@ -31,10 +31,10 @@ namespace WeatherService
         public void ConfigureServices(IServiceCollection services)
         {
             // Configure strongly typed settings objects.
+            services.Configure<ApiKeys>(Configuration.GetSection("Keys"));
+
             var appSettingsSection = Configuration.GetSection("SecurityConfig");
             services.Configure<SecurityConfig>(appSettingsSection);
-
-            services.Configure<ApiKeys>(Configuration.GetSection("Keys"));
 
             // Configure JWT authentication.
             var appSettings = appSettingsSection.Get<SecurityConfig>();
