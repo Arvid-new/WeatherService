@@ -45,10 +45,12 @@ namespace WeatherService.WeatherProviders
         protected static readonly HttpClient HttpClient = new HttpClient();
 
         public readonly string Name;
+        public readonly string Key;
 
-        public AbstractProvider(string name)
+        public AbstractProvider(string name, string key)
         {
             Name = name;
+            Key = key;
         }
 
         public abstract Task<ResponseModel> GetWeatherAsync(Coords coords);

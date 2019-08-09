@@ -45,11 +45,11 @@ namespace WeatherService.Controllers
         {
             var provider = WeatherManager.GetWeatherProvider(WeatherProvider.OpenWeather);
             if (provider == null)
-                return StatusCode((int)HttpStatusCode.ServiceUnavailable, "Access to this provider has been disabled.");
+                return StatusCode((int)HttpStatusCode.ServiceUnavailable, new { message = "Access to this provider has been disabled." });
 
             var weather = await provider.GetWeatherAsync(new Coords(38.0831702, 23.792224));
             if (weather == null)
-                return StatusCode((int)HttpStatusCode.ServiceUnavailable, "Failed to get weather from provider.");
+                return StatusCode((int)HttpStatusCode.ServiceUnavailable, new { message = "Failed to get weather from provider." });
 
             Logger.LogInformation("Acquired weather from [default] " + provider.Name);
             return new JsonResult(weather);
@@ -60,18 +60,18 @@ namespace WeatherService.Controllers
         public async Task<ActionResult> Get(int provId, double lat, double lon)
         {
             if (!Coords.ValidateCoords(lat, lon))
-                return BadRequest("The coordinates are invalid.");
+                return BadRequest(new { message = $"The coordinates are invalid. Coords: ({lat},{lon})" });
 
             if (!Enum.IsDefined(typeof(WeatherProvider), provId))
-                return BadRequest("No provider with ID " + provId + " has been defined.");
+                return BadRequest(new { message = "No provider with ID " + provId + " has been defined." });
 
             var provider = WeatherManager.GetWeatherProvider((WeatherProvider)provId);
             if (provider == null)
-                return StatusCode((int)HttpStatusCode.ServiceUnavailable, "Access to this provider has been disabled.");
+                return StatusCode((int)HttpStatusCode.ServiceUnavailable, new { message = "Access to this provider has been disabled." });
 
             var weather = await provider.GetWeatherAsync(new Coords(lat, lon));
             if (weather == null)
-                return StatusCode((int)HttpStatusCode.ServiceUnavailable, "Failed to get weather from provider.");
+                return StatusCode((int)HttpStatusCode.ServiceUnavailable, new { message = "Failed to get weather from provider." });
 
             Logger.LogInformation("Acquired weather from " + provider.Name);
             return new JsonResult(weather);

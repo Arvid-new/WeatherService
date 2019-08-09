@@ -50,6 +50,10 @@ namespace WeatherService
 
         public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
+                .ConfigureAppConfiguration((hostingContext, config) =>
+                {
+                    config.AddJsonFile("securityconfig.json", optional: false, reloadOnChange: false);
+                })
                 .UseStartup<Startup>()
                 .UseSerilog();
     }

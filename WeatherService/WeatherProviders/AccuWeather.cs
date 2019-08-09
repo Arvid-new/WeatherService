@@ -11,7 +11,6 @@ namespace WeatherService.WeatherProviders
 {
     public class AccuWeather : AbstractProvider
     {
-        private const string Key = "it3AiVlpDhiEmV47sHlv8GW3Xs8vvaAG ";
         private const string LocationAPICall = @"http://dataservice.accuweather.com/locations/v1/cities/geoposition/search?q={0},{1}&apikey={2}";
         private const string WeatherAPICall = @"http://dataservice.accuweather.com/forecasts/v1/daily/5day/{0}?details=true&apikey={1}";
         private const string CurrentAPICall = @"http://dataservice.accuweather.com/currentconditions/v1/{0}?details=true&apikey={1}";
@@ -20,7 +19,7 @@ namespace WeatherService.WeatherProviders
         private readonly ConcurrentDictionary<Coords, AccuWeatherLocationModel> CoordsToLoc = new ConcurrentDictionary<Coords, AccuWeatherLocationModel>();
         private readonly ConcurrentDictionary<string, ResponseModel> ResponseCache = new ConcurrentDictionary<string, ResponseModel>();
 
-        public AccuWeather(string name) : base(name) { }
+        public AccuWeather(string name, string key) : base(name, key) { }
 
         public override async Task<ResponseModel> GetWeatherAsync(Coords coords)
         {

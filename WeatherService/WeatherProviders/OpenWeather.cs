@@ -13,7 +13,6 @@ namespace WeatherService.WeatherProviders
 {
     public class OpenWeather : AbstractProvider
     {
-        private const string Key = "423bfce432ab364947047977e369fabe";
         private const string HourlyAPICall = @"http://api.openweathermap.org/data/2.5/forecast?lat={0}&lon={1}&APPID={2}";
         private const string CurrentAPICall = @"http://api.openweathermap.org/data/2.5/weather?lat={0}&lon={1}&APPID={2}";
         private const int UpdateMinutes = 120;
@@ -30,7 +29,7 @@ namespace WeatherService.WeatherProviders
 
         private readonly ConcurrentDictionary<Coords, ResponseModel> ResponseCache = new ConcurrentDictionary<Coords, ResponseModel>();
 
-        public OpenWeather(string name) : base(name) { }
+        public OpenWeather(string name, string key) : base(name, key) { }
 
         public override async Task<ResponseModel> GetWeatherAsync(Coords coords)
         {

@@ -34,6 +34,8 @@ namespace WeatherService
             var appSettingsSection = Configuration.GetSection("SecurityConfig");
             services.Configure<SecurityConfig>(appSettingsSection);
 
+            services.Configure<ApiKeys>(Configuration.GetSection("Keys"));
+
             // Configure JWT authentication.
             var appSettings = appSettingsSection.Get<SecurityConfig>();
             var key = Encoding.ASCII.GetBytes(appSettings.Secret);
