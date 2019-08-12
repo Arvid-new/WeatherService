@@ -8,7 +8,7 @@ namespace WeatherService.Models
 {
     public class ResponseModel
     {
-        public DateTime CallTime;
+        public DateTime Expiration;
         public string Provider;
 
         public string CityName;

@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Microsoft.Extensions.Caching.Memory;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -19,14 +20,16 @@ namespace WeatherService.WeatherProviders
         private readonly ConcurrentDictionary<Coords, AccuWeatherLocationModel> CoordsToLoc = new ConcurrentDictionary<Coords, AccuWeatherLocationModel>();
         private readonly ConcurrentDictionary<string, ResponseModel> ResponseCache = new ConcurrentDictionary<string, ResponseModel>();
 
-        public AccuWeather(string name, string key) : base(name, key) { }
+        public AccuWeather(string name, string key, IMemoryCache cache) : base(name, key, cache) { }
 
         public override async Task<ResponseModel> GetWeatherAsync(Coords coords)
         {
+            DateTime now = DateTime.UtcNow;
+
             ResponseModel response = GetWeatherFromCache(coords);
             if (response != null) // We have both the location key and the weather.
             {
-                if ((DateTime.UtcNow - response.CallTime).Minutes > UpdateMinutes) // Cached response is too old.
+                if (now > response.Expiration) // Cached response is too old.
                 {
                     LogInfo("Cache removed: Too old. | Coords: " + coords);
                     ResponseCache.Remove(CoordsToLoc[coords].Key, out _);
@@ -49,7 +52,7 @@ namespace WeatherService.WeatherProviders
                     return null;
 
                 response = daily.ToResponseModel(loc, current[0]);
-                response.CallTime = DateTime.UtcNow;
+                response.Expiration = now.AddMinutes(UpdateMinutes);
                 ResponseCache.TryAdd(loc.Key, response);
                 return response;
             }
@@ -76,7 +79,7 @@ namespace WeatherService.WeatherProviders
                 return null;
 
             response = daily2.ToResponseModel(locResult, current2[0]);
-            response.CallTime = DateTime.UtcNow;
+            response.Expiration = now.AddMinutes(UpdateMinutes);
             ResponseCache.TryAdd(locResult.Key, response);
             return response;
         }

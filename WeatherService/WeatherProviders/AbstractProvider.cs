@@ -1,6 +1,8 @@
-﻿using Newtonsoft.Json;
+﻿using Microsoft.Extensions.Caching.Memory;
+using Newtonsoft.Json;
 using Serilog;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -44,13 +46,16 @@ namespace WeatherService.WeatherProviders
     {
         protected static readonly HttpClient HttpClient = new HttpClient();
 
+        protected readonly IMemoryCache Cache;
+
         public readonly string Name;
         public readonly string Key;
 
-        public AbstractProvider(string name, string key)
+        public AbstractProvider(string name, string key, IMemoryCache cache)
         {
             Name = name;
             Key = key;
+            Cache = cache;
         }
 
         public abstract Task<ResponseModel> GetWeatherAsync(Coords coords);

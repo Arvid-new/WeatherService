@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -33,12 +34,15 @@ namespace WeatherService
             // Configure strongly typed settings objects.
             services.Configure<ApiKeys>(Configuration.GetSection("Keys"));
 
-            var appSettingsSection = Configuration.GetSection("SecurityConfig");
-            services.Configure<SecurityConfig>(appSettingsSection);
+            var appSettingsSection = Configuration.GetSection("AppSettings");
+            services.Configure<AppSettings>(appSettingsSection);
+
+            var securityConfigSection = Configuration.GetSection("SecurityConfig");
+            services.Configure<SecurityConfig>(securityConfigSection);
 
             // Configure JWT authentication.
-            var appSettings = appSettingsSection.Get<SecurityConfig>();
-            var key = Encoding.ASCII.GetBytes(appSettings.Secret);
+            var securityConfig = securityConfigSection.Get<SecurityConfig>();
+            var key = Encoding.ASCII.GetBytes(securityConfig.Secret);
             services.AddAuthentication(x =>
             {
                 x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -57,9 +61,15 @@ namespace WeatherService
                 };
             });
 
+            // MemoryCache.
+            var appSettings = appSettingsSection.Get<AppSettings>();
+            services.AddMemoryCache(options =>
+            {
+                options.ExpirationScanFrequency = TimeSpan.FromSeconds(appSettings.CacheExpirationScanInterval);
+            });
+
             // Configure DI for application services.
             services.AddScoped<UserService>();
-
             services.AddSingleton<WeatherProviderManager>();
             services.AddMvc(options =>
             {
