@@ -24,19 +24,10 @@ namespace WeatherService.WeatherProviders
             DateTime now = DateTime.UtcNow;
 
             // Try to get weather from cache.
-            ResponseModel response = GetWeatherFromCache(coords);
-            if (response != null)
+            if (Cache.TryGetValue(coords, out ResponseModel response))
             {
-                if (now > response.Expiration) // Cached response is too old.
-                {
-                    LogInfo("Cache removed: Too old. | Coords: " + coords);
-                    Cache.Remove(coords);
-                }
-                else
-                {
-                    LogInfo("Acquired weather from cache | Coords: " + coords);
-                    return response;
-                }
+                LogInfo("Acquired response from cache | Coords: " + coords);
+                return response;
             }
 
             DarkSkyModel result = await CallFormatAsync<DarkSkyModel>(APICall, Key, coords.LatText, coords.LonText);
@@ -45,13 +36,8 @@ namespace WeatherService.WeatherProviders
 
             response = result.ToResponseModel();
             response.Expiration = now.AddMinutes(UpdateMinutes);
-            Cache.Set(coords, response);
+            Cache.Set(coords, response, response.Expiration);
             return response;
-        }
-
-        private ResponseModel GetWeatherFromCache(Coords coords)
-        {
-            return Cache.TryGetValue(coords, out ResponseModel response) ? response : null;
         }
     }
 }

@@ -16,20 +16,20 @@ namespace WeatherService.Models
             public long time;
             public string summary;
             public string icon;
-            public float precipIntensity;
-            public float precipIntensityError;
-            public float precipProbability;
+            public float? precipIntensity;
+            public float? precipIntensityError;
+            public float? precipProbability;
             public string precipType;
-            public float dewPoint;
-            public float humidity;
-            public float pressure;
-            public float windSpeed;
-            public float windGust;
-            public int windBearing;
-            public float cloudCover;
-            public int uvIndex;
-            public float visibility;
-            public float ozone;
+            public float? dewPoint;
+            public float? humidity;
+            public float? pressure;
+            public float? windSpeed;
+            public float? windGust;
+            public int? windBearing;
+            public float? cloudCover;
+            public int? uvIndex;
+            public float? visibility;
+            public float? ozone;
         }
 
         public class DataBlock
@@ -40,10 +40,10 @@ namespace WeatherService.Models
 
         public class Currently : Status
         {
-            public float apparentTemperature;
-            public int nearestStormDistance;
-            public float nearestStormBearing;
-            public float temperature;
+            public float? apparentTemperature;
+            public int? nearestStormDistance;
+            public float? nearestStormBearing;
+            public float? temperature;
         }
 
         public Currently currently;
@@ -57,9 +57,9 @@ namespace WeatherService.Models
 
         public class HourlyData : Status
         {
-            public float apparentTemperature;
-            public float precipAccumulation;
-            public float temperature;
+            public float? apparentTemperature;
+            public float? precipAccumulation;
+            public float? temperature;
         }
 
         public class Hourly : DataBlock
@@ -71,35 +71,35 @@ namespace WeatherService.Models
 
         public class DailyData : Status
         {
-            public float apparentTemperatureHigh;
-            public long apparentTemperatureHighTime;
-            public float apparentTemperatureLow;
-            public long apparentTemperatureLowTime;
+            public float? apparentTemperatureHigh;
+            public long? apparentTemperatureHighTime;
+            public float? apparentTemperatureLow;
+            public long? apparentTemperatureLowTime;
 
-            public float apparentTemperatureMax;
-            public long apparentTemperatureMaxTime;
-            public float apparentTemperatureMin;
-            public long apparentTemperatureMinTime;
+            public float? apparentTemperatureMax;
+            public long? apparentTemperatureMaxTime;
+            public float? apparentTemperatureMin;
+            public long? apparentTemperatureMinTime;
 
-            public float moonPhase;
-            public float precipAccumulation;
-            public float precipIntensityMax;
-            public long precipIntensityMaxTime;
-            public long sunriseTime;
-            public long sunsetTime;
+            public float? moonPhase;
+            public float? precipAccumulation;
+            public float? precipIntensityMax;
+            public long? precipIntensityMaxTime;
+            public long? sunriseTime;
+            public long? sunsetTime;
 
-            public float temperatureHigh;
-            public long temperatureHighTime;
-            public float temperatureLow;
-            public long temperatureLowTime;
+            public float? temperatureHigh;
+            public long? temperatureHighTime;
+            public float? temperatureLow;
+            public long? temperatureLowTime;
 
-            public float temperatureMax;
-            public long temperatureMaxTime;
-            public float temperatureMin;
-            public long temperatureMinTime;
+            public float? temperatureMax;
+            public long? temperatureMaxTime;
+            public float? temperatureMin;
+            public long? temperatureMinTime;
 
-            public long uvIndexTime;
-            public long windGustTime;
+            public long? uvIndexTime;
+            public long? windGustTime;
         }
 
         public class Daily : DataBlock
@@ -126,34 +126,37 @@ namespace WeatherService.Models
                 CityName = null,
                 Coords = new WeatherProviders.Coords(latitude, longitude),
                 Country = null,
-                Now = new ResponseModel.Current()
+                Now = currently == null ? null : new ResponseModel.Current()
                 {
                     Date = currently.time,
                     Temp = currently.temperature,
                     Humidity = currently.humidity,
-                    Cloudiness = (int)(currently.cloudCover * 100),
+                    Cloudiness = currently.cloudCover == null ? null : (int?)(currently.cloudCover * 100),
                     WeatherType = currently.icon,
                     WeatherDescription = currently.summary,
                     WindSpeed = currently.windSpeed,
                     WindDeg = currently.windBearing
                 },
-                Forecasts = new ResponseModel.Forecast[daily.data.Length]
+                Forecasts = daily == null ? null : new ResponseModel.Forecast[daily.data.Length]
             };
 
-            for (int i = 0; i < daily.data.Length; i++)
+            if (response.Forecasts != null)
             {
-                response.Forecasts[i] = new ResponseModel.Forecast
+                for (int i = 0; i < daily.data.Length; i++)
                 {
-                    Date = daily.data[i].time,
-                    TempMax = daily.data[i].temperatureMax,
-                    TempMin = daily.data[i].temperatureMin,
-                    Humidity = daily.data[i].humidity,
-                    WeatherType = daily.data[i].icon,
-                    WeatherDescription = daily.data[i].summary,
-                    Cloudiness = (int)(daily.data[i].cloudCover * 100),
-                    WindSpeed = daily.data[i].windSpeed,
-                    WindDeg = daily.data[i].windBearing
-                };
+                    response.Forecasts[i] = new ResponseModel.Forecast
+                    {
+                        Date = daily.data[i].time,
+                        TempMax = daily.data[i].temperatureMax,
+                        TempMin = daily.data[i].temperatureMin,
+                        Humidity = daily.data[i].humidity,
+                        WeatherType = daily.data[i].icon,
+                        WeatherDescription = daily.data[i].summary,
+                        Cloudiness = daily.data[i].cloudCover == null ? null : (int?)(daily.data[i].cloudCover * 100),
+                        WindSpeed = daily.data[i].windSpeed,
+                        WindDeg = daily.data[i].windBearing
+                    };
+                }
             }
 
             return response;

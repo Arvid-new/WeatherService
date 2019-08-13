@@ -28,7 +28,7 @@ namespace WeatherService.WeatherProviders
             // Add weather providers here.
             // Don't add any provider more than once.
             Providers.Add(WeatherProvider.OpenWeather, new OpenWeather("OpenWeather", Keys.OpenWeather, cache));
-            Providers.Add(WeatherProvider.AccuWeather, new AccuWeather("AccuWeather", Keys.AccuWeather, cache));
+            //Providers.Add(WeatherProvider.AccuWeather, new AccuWeather("AccuWeather", Keys.AccuWeather, cache));
             Providers.Add(WeatherProvider.DarkSky, new DarkSky("DarkSky", Keys.DarkSky, cache));
         }
 

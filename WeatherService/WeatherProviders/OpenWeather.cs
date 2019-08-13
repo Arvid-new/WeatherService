@@ -20,7 +20,7 @@ namespace WeatherService.WeatherProviders
         private const int CallsPerMinute = 60;
         private const int BlockMinutes = 10;
 
-        private static readonly object Lock = new object();
+        private readonly object Lock = new object();
 
         private bool Blocked = false;
         private DateTime LastBlocked;
@@ -35,26 +35,15 @@ namespace WeatherService.WeatherProviders
             DateTime now = DateTime.UtcNow;
 
             // Try to get weather from cache.
-            ResponseModel response = GetWeatherFromCache(coords);
-            if (response != null)
+            if (Cache.TryGetValue(coords, out ResponseModel response))
             {
-                if (now > response.Expiration) // Cached response is too old.
-                {
-                    LogInfo("Cache removed: Too old. | Coords: " + coords);
-                    Cache.Remove(coords);
-                }
-                else
-                {
-                    LogInfo("Acquired weather from cache | Coords: " + coords);
-                    return response;
-                }
+                LogInfo("Acquired response from cache | Coords: " + coords);
+                return response;
             }
 
             // Can we call the API right now?
             if (!CheckAvailability())
-            {
                 return null;
-            }
 
             OpenWeatherModel hourly = await CallFormatAsync<OpenWeatherModel>(HourlyAPICall, coords.LatText, coords.LonText, Key);
             if (hourly == null)
@@ -65,6 +54,7 @@ namespace WeatherService.WeatherProviders
                 return null;
 
             Interlocked.Add(ref Calls, 2);
+
             if (hourly.cod == "429" || current.cod == 429) // 429 means we are blocked.
             {
                 lock (Lock)
@@ -77,13 +67,8 @@ namespace WeatherService.WeatherProviders
 
             response = hourly.ToResponseModel(current);
             response.Expiration = now.AddMinutes(UpdateMinutes);
-            Cache.Set(coords, response);
+            Cache.Set(coords, response, response.Expiration);
             return response;
-        }
-
-        private ResponseModel GetWeatherFromCache(Coords coords)
-        {
-            return Cache.TryGetValue(coords, out ResponseModel response) ? response : null;
         }
 
         /// <summary>
