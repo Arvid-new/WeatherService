@@ -41,5 +41,29 @@ namespace WeatherService.WeatherProviders
         {
             return Providers.ContainsKey(provider);
         }
+
+        public List<ProviderView> GetProviders()
+        {
+            List<ProviderView> result = new List<ProviderView>();
+
+            foreach (var prov in Providers)
+            {
+                result.Add(new ProviderView((int)prov.Key, prov.Value.Name));
+            }
+
+            return result;
+        }
+    }
+
+    public class ProviderView
+    {
+        public int Id;
+        public string Name;
+
+        public ProviderView(int id, string name)
+        {
+            Id = id;
+            Name = name;
+        }
     }
 }

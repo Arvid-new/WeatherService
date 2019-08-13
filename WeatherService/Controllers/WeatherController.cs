@@ -9,6 +9,7 @@ using Microsoft.Extensions.Logging;
 using WeatherService.Security;
 using WeatherService.Entities;
 using WeatherService.WeatherProviders;
+using Microsoft.AspNetCore.Http;
 
 namespace WeatherService.Controllers
 {
@@ -39,20 +40,11 @@ namespace WeatherService.Controllers
             return Ok(user.Token);
         }
 
-        [HttpGet]
-        [ResponseCache(CacheProfileName = "DefaultWeather")]
-        public async Task<ActionResult> Get() // Used for testing currently.
+
+        [HttpGet("providers")]
+        public ActionResult Get()
         {
-            var provider = WeatherManager.GetWeatherProvider(WeatherProvider.OpenWeather);
-            if (provider == null)
-                return StatusCode((int)HttpStatusCode.ServiceUnavailable, new { message = "Access to this provider has been disabled." });
-
-            var weather = await provider.GetWeatherAsync(new Coords(38.0831702, 23.792224));
-            if (weather == null)
-                return StatusCode((int)HttpStatusCode.ServiceUnavailable, new { message = "Failed to get weather from provider." });
-
-            Logger.LogInformation("Acquired weather from [default] " + provider.Name);
-            return new JsonResult(weather);
+            return new JsonResult(WeatherManager.GetProviders());
         }
 
         [HttpGet("{provId},{lat},{lon}")]
@@ -67,11 +59,11 @@ namespace WeatherService.Controllers
 
             var provider = WeatherManager.GetWeatherProvider((WeatherProvider)provId);
             if (provider == null)
-                return StatusCode((int)HttpStatusCode.ServiceUnavailable, new { message = "Access to this provider has been disabled." });
-
+                return BadRequest(new { message = "Access to this provider has been disabled." });
+            
             var weather = await provider.GetWeatherAsync(new Coords(lat, lon));
             if (weather == null)
-                return StatusCode((int)HttpStatusCode.ServiceUnavailable, new { message = "Failed to get weather from provider." });
+                return StatusCode(StatusCodes.Status503ServiceUnavailable, new { message = "Failed to get weather from provider." });
 
             Logger.LogInformation("Acquired weather from " + provider.Name);
             return new JsonResult(weather);
