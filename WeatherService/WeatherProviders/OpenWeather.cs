@@ -16,7 +16,7 @@ namespace WeatherService.WeatherProviders
     {
         private const string HourlyAPICall = @"http://api.openweathermap.org/data/2.5/forecast?lat={0}&lon={1}&APPID={2}";
         private const string CurrentAPICall = @"http://api.openweathermap.org/data/2.5/weather?lat={0}&lon={1}&APPID={2}";
-        private const int UpdateMinutes = 120;
+        private const int UpdateMinutes = 30;
         private const int CallsPerMinute = 60;
         private const int BlockMinutes = 10;
 
