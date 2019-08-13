@@ -12,24 +12,22 @@ namespace WeatherService.WeatherProviders
     public enum WeatherProvider
     {
         OpenWeather,
-        AccuWeather,
-        DarkSky
+        DarkSky,
+        AccuWeather
     }
 
     public class WeatherProviderManager
     {
         private readonly Dictionary<WeatherProvider, AbstractProvider> Providers = new Dictionary<WeatherProvider, AbstractProvider>();
-        private readonly ApiKeys Keys;
 
-        public WeatherProviderManager(IOptions<ApiKeys> keys, IMemoryCache cache)
+        public WeatherProviderManager(IOptions<ApiKeys> keysOpts, IMemoryCache cache)
         {
-            Keys = keys.Value;
+            ApiKeys keys = keysOpts.Value;
 
             // Add weather providers here.
-            // Don't add any provider more than once.
-            Providers.Add(WeatherProvider.OpenWeather, new OpenWeather("OpenWeather", Keys.OpenWeather, cache));
+            Providers.Add(WeatherProvider.OpenWeather, new OpenWeather("OpenWeather", keys.OpenWeather, cache));
+            Providers.Add(WeatherProvider.DarkSky, new DarkSky("DarkSky", keys.DarkSky, cache));
             //Providers.Add(WeatherProvider.AccuWeather, new AccuWeather("AccuWeather", Keys.AccuWeather, cache));
-            Providers.Add(WeatherProvider.DarkSky, new DarkSky("DarkSky", Keys.DarkSky, cache));
         }
 
         public AbstractProvider GetWeatherProvider(WeatherProvider provider)
@@ -42,25 +40,25 @@ namespace WeatherService.WeatherProviders
             return Providers.ContainsKey(provider);
         }
 
-        public List<ProviderView> GetProviders()
+        public List<ProviderViewModel> GetProviders()
         {
-            List<ProviderView> result = new List<ProviderView>();
+            List<ProviderViewModel> result = new List<ProviderViewModel>();
 
             foreach (var prov in Providers)
             {
-                result.Add(new ProviderView((int)prov.Key, prov.Value.Name));
+                result.Add(new ProviderViewModel((int)prov.Key, prov.Value.Name));
             }
 
             return result;
         }
     }
 
-    public class ProviderView
+    public class ProviderViewModel
     {
         public int Id;
         public string Name;
 
-        public ProviderView(int id, string name)
+        public ProviderViewModel(int id, string name)
         {
             Id = id;
             Name = name;

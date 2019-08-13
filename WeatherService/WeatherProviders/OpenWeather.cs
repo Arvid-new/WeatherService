@@ -32,8 +32,6 @@ namespace WeatherService.WeatherProviders
 
         public override async Task<ResponseModel> GetWeatherAsync(Coords coords)
         {
-            DateTime now = DateTime.UtcNow;
-
             // Try to get weather from cache.
             if (Cache.TryGetValue(coords, out ResponseModel response))
             {
@@ -64,7 +62,7 @@ namespace WeatherService.WeatherProviders
             }
 
             response = hourly.ToResponseModel(current);
-            response.Expiration = now.AddMinutes(UpdateMinutes);
+            response.Expiration = DateTime.UtcNow.AddMinutes(UpdateMinutes);
             Cache.Set(coords, response, response.Expiration);
             return response;
         }
