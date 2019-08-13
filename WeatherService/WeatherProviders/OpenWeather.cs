@@ -49,19 +49,17 @@ namespace WeatherService.WeatherProviders
             if (hourly == null)
                 return null;
 
+            Interlocked.Increment(ref Calls);
+
             OpenWeatherCurrentModel current = await CallFormatAsync<OpenWeatherCurrentModel>(CurrentAPICall, coords.LatText, coords.LonText, Key);
             if (current == null)
                 return null;
 
-            Interlocked.Add(ref Calls, 2);
+            Interlocked.Increment(ref Calls);
 
             if (hourly.cod == "429" || current.cod == 429) // 429 means we are blocked.
             {
-                lock (Lock)
-                {
-                    Blocked = true;
-                    LastBlocked = now;
-                }
+                Block();
                 return null;
             }
 
@@ -69,6 +67,15 @@ namespace WeatherService.WeatherProviders
             response.Expiration = now.AddMinutes(UpdateMinutes);
             Cache.Set(coords, response, response.Expiration);
             return response;
+        }
+
+        private void Block()
+        {
+            lock (Lock)
+            {
+                Blocked = true;
+                LastBlocked = DateTime.UtcNow;
+            }
         }
 
         /// <summary>
@@ -80,6 +87,7 @@ namespace WeatherService.WeatherProviders
             lock (Lock)
             {
                 DateTime now = DateTime.UtcNow;
+
                 if ((now - LastCallsReset).TotalMinutes >= 1) // Reset calls.
                 {
                     Calls = 0;
