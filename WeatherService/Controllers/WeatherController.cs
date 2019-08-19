@@ -64,9 +64,9 @@ namespace WeatherService.Controllers
             
             var weather = await provider.GetWeatherAsync(new Coords(lat, lon));
             if (weather == null)
-                return ErrorInfo.ServiceUnvailable("Failed to get weather from provider.");
+                return ErrorInfo.ServiceUnvailable("Failed to get weather from " + provider.Name);
 
-            Logger.LogInformation("Acquired weather from " + provider.Name);
+            provider.LogInfo("Acquired weather for coords: " + weather.Coords.ToString());
             return new JsonResult(weather);
         }
     }

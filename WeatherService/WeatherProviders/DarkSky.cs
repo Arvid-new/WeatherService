@@ -14,7 +14,7 @@ namespace WeatherService.WeatherProviders
 {
     public class DarkSky : AbstractProvider
     {
-        private const string APICall = @"https://api.darksky.net/forecast/{0}/{1},{2}?exclude=minutely,hourly,alerts";
+        private const string APICall = @"https://api.darksky.net/forecast/{0}/{1},{2}?exclude=minutely,hourly,alerts&units=auto";
         private const int UpdateMinutes = 62;
 
         public DarkSky(string name, string key, IMemoryCache cache) : base(name, key, cache) { }
@@ -24,7 +24,7 @@ namespace WeatherService.WeatherProviders
             // Try to get weather from cache.
             if (Cache.TryGetValue(coords, out ResponseModel response))
             {
-                LogInfo("Acquired response from cache | Coords: " + coords);
+                LogInfo("Acquired response from cache for coords: " + coords);
                 return response;
             }
 

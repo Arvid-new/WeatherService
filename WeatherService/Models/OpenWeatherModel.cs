@@ -102,6 +102,7 @@ namespace WeatherService.Models
                 Forecasts = new ResponseModel.Forecast[list.Length / 8]
             };
 
+            // The free package returns the weather every 3 hours so we need to calculate the daily weather from that.
             for (int i = 0; i < response.Forecasts.Length; i++)
             {
                 int j = i * 8;

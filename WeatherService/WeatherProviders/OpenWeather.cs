@@ -35,7 +35,7 @@ namespace WeatherService.WeatherProviders
             // Try to get weather from cache.
             if (Cache.TryGetValue(coords, out ResponseModel response))
             {
-                LogInfo("Acquired response from cache | Coords: " + coords);
+                LogInfo("Acquired response from cache for coords: " + coords);
                 return response;
             }
 
