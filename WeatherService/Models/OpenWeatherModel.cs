@@ -111,13 +111,17 @@ namespace WeatherService.Models
                     Date = list[j].dt,
                     TempMax = float.MinValue,
                     TempMin = float.MaxValue,
-                    Humidity = list[j].main.humidity,
                     WeatherType = list[j].weather[0].main,
-                    WeatherDescription = list[j].weather[0].description,
-                    Cloudiness = list[j].clouds.all,
-                    WindSpeed = list[j].wind.speed,
-                    WindDeg = list[j].wind.deg
+                    WeatherDescription = list[j].weather[0].description
                 };
+
+                float degRads = DegToRad(list[j].wind.deg);
+                float degSinSum = MathF.Sin(degRads);
+                float degCosSum = MathF.Cos(degRads);
+
+                int humiditySum = list[j].main.humidity;
+                int cloudinessSum = list[j].clouds.all;
+                float windSpeedSum = list[j].wind.speed;
 
                 int count = 1;
                 for (++j; j < i * 8 + 8; j++)
@@ -130,13 +134,35 @@ namespace WeatherService.Models
                     if (list[j].main.temp > forecast.TempMax)
                         forecast.TempMax = list[j].main.temp;
 
-                    forecast.Humidity += (list[j].main.humidity - forecast.Humidity) / count;
-                    forecast.Cloudiness += (list[j].clouds.all - forecast.Cloudiness) / count;
-                    forecast.WindSpeed += (list[j].wind.speed - forecast.WindSpeed) / count;
+                    degRads = DegToRad(list[j].wind.deg);
+                    degSinSum += MathF.Sin(degRads);
+                    degCosSum += MathF.Cos(degRads);
+
+                    humiditySum += list[j].main.humidity;
+                    cloudinessSum += list[j].clouds.all;
+                    windSpeedSum += list[j].wind.speed;
                 }
+
+                forecast.WindDeg = RadToDeg(MathF.Atan2(degSinSum / count, degCosSum / count)); // Average angle.
+                if (forecast.WindDeg < 0) // Convert negative angle to positive.
+                    forecast.WindDeg += 360;
+
+                forecast.Humidity = humiditySum / count;
+                forecast.Cloudiness = cloudinessSum / count;
+                forecast.WindSpeed = windSpeedSum / count;
             }
 
             return response;
+        }
+
+        private float DegToRad(float degrees)
+        {
+            return MathF.PI / 180 * degrees;
+        }
+
+        private float RadToDeg(float rads)
+        {
+            return rads * 180 / MathF.PI;
         }
     }
 }
