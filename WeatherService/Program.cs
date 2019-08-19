@@ -20,15 +20,33 @@ namespace WeatherService
     {
         public static int Main(string[] args)
         {
-            Log.Logger = new LoggerConfiguration()
+            string envName = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+
+            // Serilog configuration.
+            if (envName == EnvironmentName.Development) // Development.
+            {
+                Log.Logger = new LoggerConfiguration()
+                .MinimumLevel.Debug()
+                .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
+                .MinimumLevel.Override("System", LogEventLevel.Information)
+                .Enrich.FromLogContext()
+                .WriteTo.Console()
+                .WriteTo.File("Logs/log.log", rollingInterval: RollingInterval.Day,
+                    retainedFileCountLimit: 20, rollOnFileSizeLimit: true)
+                .CreateLogger();
+            }
+            else
+            {
+                Log.Logger = new LoggerConfiguration() // Production & Staging
                 .MinimumLevel.Information()
                 .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
                 .MinimumLevel.Override("System", LogEventLevel.Information)
                 .Enrich.FromLogContext()
                 .WriteTo.Console()
-                .WriteTo.File( "Logs/log.log", rollingInterval: RollingInterval.Day,
-                    retainedFileCountLimit: 31, rollOnFileSizeLimit: true)
+                .WriteTo.File("Logs/log.log", rollingInterval: RollingInterval.Day,
+                    retainedFileCountLimit: 20, rollOnFileSizeLimit: true)
                 .CreateLogger();
+            }
 
             try
             {

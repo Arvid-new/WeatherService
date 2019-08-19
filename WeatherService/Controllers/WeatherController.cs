@@ -9,6 +9,7 @@ using Microsoft.Extensions.Logging;
 using WeatherService.Security;
 using WeatherService.Entities;
 using WeatherService.WeatherProviders;
+using WeatherService.Error;
 using Microsoft.AspNetCore.Http;
 
 namespace WeatherService.Controllers
@@ -34,7 +35,7 @@ namespace WeatherService.Controllers
             var user = await userService.AuthenticateAsync(userParam.Username, userParam.Password);
 
             if (user == null)
-                return BadRequest(new { message = "Username or password is incorrect" });
+                return ErrorInfo.BadRequest("Username or password is incorrect");
 
             Logger.LogInformation("User [{0}] has been successfully authenticated.", userParam.Username);
             return Ok(user.Token);
@@ -52,18 +53,18 @@ namespace WeatherService.Controllers
         public async Task<ActionResult> Get(int provId, double lat, double lon)
         {
             if (!Coords.ValidateCoords(lat, lon))
-                return BadRequest(new { message = $"The coordinates are invalid. Coords: ({lat},{lon})" });
+                return ErrorInfo.BadRequest($"The coordinates are invalid. Coords: ({lat},{lon})");
 
             if (!Enum.IsDefined(typeof(WeatherProvider), provId))
-                return BadRequest(new { message = "No provider with ID " + provId + " has been defined." });
+                return ErrorInfo.BadRequest("No provider with ID " + provId + " has been defined.");
 
             var provider = WeatherManager.GetWeatherProvider((WeatherProvider)provId);
             if (provider == null)
-                return BadRequest(new { message = "Access to this provider has been disabled." });
+                return ErrorInfo.BadRequest("Access to this provider has been disabled.");
             
             var weather = await provider.GetWeatherAsync(new Coords(lat, lon));
             if (weather == null)
-                return StatusCode(StatusCodes.Status503ServiceUnavailable, new { message = "Failed to get weather from provider." });
+                return ErrorInfo.ServiceUnvailable("Failed to get weather from provider.");
 
             Logger.LogInformation("Acquired weather from " + provider.Name);
             return new JsonResult(weather);
