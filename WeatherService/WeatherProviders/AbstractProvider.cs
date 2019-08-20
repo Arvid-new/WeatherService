@@ -11,8 +11,16 @@ using WeatherService.Models;
 
 namespace WeatherService.WeatherProviders
 {
+    public enum Units
+    {
+        Metric,
+        Imperial
+    }
+
     public abstract class AbstractProvider
     {
+        public const Units DefaultUnits = Units.Metric;
+
         protected static readonly HttpClient HttpClient = new HttpClient();
 
         protected readonly IMemoryCache Cache;
@@ -27,7 +35,7 @@ namespace WeatherService.WeatherProviders
             Cache = cache;
         }
 
-        public abstract Task<ResponseModel> GetWeatherAsync(Coords coords);
+        public abstract Task<ResponseModel> GetWeatherAsync(Coords coords, Units units);
 
         public void LogInfo(string message)
         {

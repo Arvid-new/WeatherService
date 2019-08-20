@@ -22,7 +22,7 @@ namespace WeatherService.WeatherProviders
 
         public AccuWeather(string name, string key, IMemoryCache cache) : base(name, key, cache) { }
 
-        public override async Task<ResponseModel> GetWeatherAsync(Coords coords)
+        public override async Task<ResponseModel> GetWeatherAsync(Coords coords, Units units)
         {
             DateTime now = DateTime.UtcNow;
 

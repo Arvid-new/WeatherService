@@ -35,7 +35,7 @@ namespace WeatherService.Controllers
             var user = await userService.AuthenticateAsync(userParam.Username, userParam.Password);
 
             if (user == null)
-                return ErrorInfo.BadRequest("Username or password is incorrect");
+                return ErrorInfo.BadRequest("Incorrect username or password");
 
             Logger.LogInformation("User [{0}] has been successfully authenticated.", userParam.Username);
             return Ok(user.Token);
@@ -50,7 +50,7 @@ namespace WeatherService.Controllers
 
         [HttpGet("{provId},{lat},{lon}")]
         [ResponseCache(CacheProfileName = "DefaultWeather")]
-        public async Task<ActionResult> Get(int provId, double lat, double lon)
+        public async Task<ActionResult> Get(int provId, double lat, double lon, string units = "Metric")
         {
             if (!Coords.ValidateCoords(lat, lon))
                 return ErrorInfo.BadRequest($"The coordinates are invalid. Coords: ({lat},{lon})");
@@ -58,11 +58,17 @@ namespace WeatherService.Controllers
             if (!Enum.IsDefined(typeof(WeatherProvider), provId))
                 return ErrorInfo.BadRequest("No provider with ID " + provId + " has been defined.");
 
+            if (!Enum.TryParse(units, true, out Units u))
+            {
+                u = AbstractProvider.DefaultUnits;
+                Logger.LogInformation("Invalid units ({0}). Using default.", units);
+            }
+
             var provider = WeatherManager.GetWeatherProvider((WeatherProvider)provId);
             if (provider == null)
                 return ErrorInfo.BadRequest("Access to this provider has been disabled.");
             
-            var weather = await provider.GetWeatherAsync(new Coords(lat, lon));
+            var weather = await provider.GetWeatherAsync(new Coords(lat, lon), u);
             if (weather == null)
                 return ErrorInfo.ServiceUnvailable("Failed to get weather from " + provider.Name);
 

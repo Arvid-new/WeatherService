@@ -14,8 +14,8 @@ namespace WeatherService.WeatherProviders
 {
     public class OpenWeather : AbstractProvider
     {
-        private const string HourlyAPICall = @"http://api.openweathermap.org/data/2.5/forecast?lat={0}&lon={1}&APPID={2}";
-        private const string CurrentAPICall = @"http://api.openweathermap.org/data/2.5/weather?lat={0}&lon={1}&APPID={2}";
+        private const string HourlyAPICall = @"http://api.openweathermap.org/data/2.5/forecast?lat={0}&lon={1}&APPID={2}&units={3}";
+        private const string CurrentAPICall = @"http://api.openweathermap.org/data/2.5/weather?lat={0}&lon={1}&APPID={2}&units={3}";
         private const int UpdateMinutes = 30;
         private const int CallsPerMinute = 60;
         private const int BlockMinutes = 10;
@@ -30,7 +30,7 @@ namespace WeatherService.WeatherProviders
 
         public OpenWeather(string name, string key, IMemoryCache cache) : base(name, key, cache) { }
 
-        public override async Task<ResponseModel> GetWeatherAsync(Coords coords)
+        public override async Task<ResponseModel> GetWeatherAsync(Coords coords, Units units)
         {
             // Try to get weather from cache.
             if (Cache.TryGetValue(coords, out ResponseModel response))
@@ -43,13 +43,15 @@ namespace WeatherService.WeatherProviders
             if (!CheckAvailability())
                 return null;
 
-            OpenWeatherModel hourly = await CallFormatAsync<OpenWeatherModel>(HourlyAPICall, coords.LatText, coords.LonText, Key);
+            string unitsTxt = units.ToString();
+
+            var hourly = await CallFormatAsync<OpenWeatherModel>(HourlyAPICall, coords.LatText, coords.LonText, Key, unitsTxt);
             if (hourly == null)
                 return null;
 
             Interlocked.Increment(ref Calls);
 
-            OpenWeatherCurrentModel current = await CallFormatAsync<OpenWeatherCurrentModel>(CurrentAPICall, coords.LatText, coords.LonText, Key);
+            var current = await CallFormatAsync<OpenWeatherCurrentModel>(CurrentAPICall, coords.LatText, coords.LonText, Key, unitsTxt);
             if (current == null)
                 return null;
 
@@ -62,6 +64,7 @@ namespace WeatherService.WeatherProviders
             }
 
             response = hourly.ToResponseModel(current);
+            response.Units = unitsTxt;
             response.Expiration = DateTime.UtcNow.AddMinutes(UpdateMinutes);
             Cache.Set(coords, response, response.Expiration);
             return response;

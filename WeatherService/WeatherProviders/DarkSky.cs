@@ -14,12 +14,12 @@ namespace WeatherService.WeatherProviders
 {
     public class DarkSky : AbstractProvider
     {
-        private const string APICall = @"https://api.darksky.net/forecast/{0}/{1},{2}?exclude=minutely,hourly,alerts&units=auto";
+        private const string APICall = @"https://api.darksky.net/forecast/{0}/{1},{2}?exclude=minutely,hourly,alerts&units={3}";
         private const int UpdateMinutes = 62;
 
         public DarkSky(string name, string key, IMemoryCache cache) : base(name, key, cache) { }
 
-        public override async Task<ResponseModel> GetWeatherAsync(Coords coords)
+        public override async Task<ResponseModel> GetWeatherAsync(Coords coords, Units units)
         {
             // Try to get weather from cache.
             if (Cache.TryGetValue(coords, out ResponseModel response))
@@ -28,14 +28,28 @@ namespace WeatherService.WeatherProviders
                 return response;
             }
 
-            DarkSkyModel result = await CallFormatAsync<DarkSkyModel>(APICall, Key, coords.LatText, coords.LonText);
+            DarkSkyModel result = await CallFormatAsync<DarkSkyModel>(APICall, Key, coords.LatText, coords.LonText, GetUnits(units));
             if (result == null)
                 return null;
 
             response = result.ToResponseModel();
+            response.Units = units.ToString();
             response.Expiration = DateTime.UtcNow.AddMinutes(UpdateMinutes);
             Cache.Set(coords, response, response.Expiration);
             return response;
+        }
+
+        private string GetUnits(Units units)
+        {
+            switch (units)
+            {
+                case Units.Imperial:
+                    return "us";
+                case Units.Metric:
+                    return "si";
+                default:
+                    return "si";
+            }
         }
     }
 }

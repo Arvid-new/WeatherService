@@ -10,6 +10,7 @@ namespace WeatherService.Models
     {
         public DateTime Expiration;
         public string Provider;
+        public string Units;
 
         public string CityName;
         public string Country;
