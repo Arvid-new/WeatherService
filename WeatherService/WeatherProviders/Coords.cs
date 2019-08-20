@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 namespace WeatherService.WeatherProviders
 {
@@ -11,7 +12,9 @@ namespace WeatherService.WeatherProviders
         public double Lat;
         public double Lon;
 
+        [JsonIgnore]
         public string LatText => Lat.ToString(CultureInfo.InvariantCulture);
+        [JsonIgnore]
         public string LonText => Lon.ToString(CultureInfo.InvariantCulture);
 
         public Coords(double lat, double lon)

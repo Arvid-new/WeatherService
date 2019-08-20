@@ -58,21 +58,21 @@ namespace WeatherService.Controllers
             if (!Enum.IsDefined(typeof(WeatherProvider), provId))
                 return ErrorInfo.BadRequest("No provider with ID " + provId + " has been defined.");
 
-            if (!Enum.TryParse(units, true, out Units u))
-            {
-                u = AbstractProvider.DefaultUnits;
-                Logger.LogInformation("Invalid units ({0}). Using default.", units);
-            }
-
             var provider = WeatherManager.GetWeatherProvider((WeatherProvider)provId);
             if (provider == null)
                 return ErrorInfo.BadRequest("Access to this provider has been disabled.");
+
+            if (!Enum.TryParse(units, true, out Units u))
+            {
+                u = AbstractProvider.DefaultUnits;
+                Logger.LogDebug("Invalid units ({0}). Using {1}.", units, u.ToString());
+            }
             
             var weather = await provider.GetWeatherAsync(new Coords(lat, lon), u);
             if (weather == null)
                 return ErrorInfo.ServiceUnvailable("Failed to get weather from " + provider.Name);
 
-            provider.LogInfo("Acquired weather for coords: " + weather.Coords.ToString());
+            provider.LogInfo($"Acquired weather | Coords: {weather.Coords.ToString()} | Units: {u.ToString()}");
             return new JsonResult(weather);
         }
     }
