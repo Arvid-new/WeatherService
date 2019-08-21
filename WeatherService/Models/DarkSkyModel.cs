@@ -130,7 +130,7 @@ namespace WeatherService.Models
                 {
                     Date = currently.time,
                     Temp = currently.temperature,
-                    Humidity = currently.humidity,
+                    Humidity = currently.humidity == null ? null : (int?)(currently.humidity * 100),
                     Cloudiness = currently.cloudCover == null ? null : (int?)(currently.cloudCover * 100),
                     WeatherType = currently.icon,
                     WeatherDescription = currently.summary,
@@ -149,7 +149,7 @@ namespace WeatherService.Models
                         Date = daily.data[i].time,
                         TempMax = daily.data[i].temperatureMax,
                         TempMin = daily.data[i].temperatureMin,
-                        Humidity = daily.data[i].humidity,
+                        Humidity = daily.data[i].humidity == null ? null : (int?)(daily.data[i].humidity * 100),
                         WeatherType = daily.data[i].icon,
                         WeatherDescription = daily.data[i].summary,
                         Cloudiness = daily.data[i].cloudCover == null ? null : (int?)(daily.data[i].cloudCover * 100),

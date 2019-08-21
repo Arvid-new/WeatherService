@@ -50,8 +50,9 @@ namespace WeatherService.Controllers
 
         [HttpGet("{provId},{lat},{lon}")]
         [ResponseCache(CacheProfileName = "DefaultWeather")]
-        public async Task<ActionResult> Get(int provId, double lat, double lon, string units = "Metric")
+        public async Task<ActionResult> Get(int provId, double lat, double lon, Units units = AbstractProvider.DefaultUnits)
         {
+            Logger.LogInformation(units.ToString());
             if (!Coords.ValidateCoords(lat, lon))
                 return ErrorInfo.BadRequest($"The coordinates are invalid. Coords: ({lat},{lon})");
 
@@ -61,18 +62,12 @@ namespace WeatherService.Controllers
             var provider = WeatherManager.GetWeatherProvider((WeatherProvider)provId);
             if (provider == null)
                 return ErrorInfo.BadRequest("Access to this provider has been disabled.");
-
-            if (!Enum.TryParse(units, true, out Units u))
-            {
-                u = AbstractProvider.DefaultUnits;
-                Logger.LogDebug("Invalid units ({0}). Using {1}.", units, u.ToString());
-            }
             
-            var weather = await provider.GetWeatherAsync(new Coords(lat, lon), u);
+            var weather = await provider.GetWeatherAsync(new Coords(lat, lon), units);
             if (weather == null)
                 return ErrorInfo.ServiceUnvailable("Failed to get weather from " + provider.Name);
 
-            provider.LogInfo($"Acquired weather | Coords: {weather.Coords.ToString()} | Units: {u.ToString()}");
+            provider.LogInfo($"Acquired weather | Coords: {weather.Coords.ToString()} | Units: {units.ToString()}");
             return new JsonResult(weather);
         }
     }
