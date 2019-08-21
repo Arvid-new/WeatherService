@@ -8,6 +8,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using WeatherService.Extensions;
 using WeatherService.Models;
 
 namespace WeatherService.WeatherProviders
@@ -66,7 +67,7 @@ namespace WeatherService.WeatherProviders
             response = hourly.ToResponseModel(current);
             response.Units = unitsTxt;
             response.Expiration = DateTime.UtcNow.AddMinutes(UpdateMinutes);
-            Cache.Set(coords, response, response.Expiration);
+            Cache.Set(coords, response, response.Expiration, 1);
             return response;
         }
 
@@ -85,10 +86,10 @@ namespace WeatherService.WeatherProviders
         /// <returns></returns>
         private bool CheckAvailability()
         {
+            DateTime now = DateTime.UtcNow;
+            
             lock (Lock)
             {
-                DateTime now = DateTime.UtcNow;
-
                 if ((now - LastCallsReset).TotalMinutes >= 1) // Reset calls.
                 {
                     Calls = 0;
@@ -97,7 +98,7 @@ namespace WeatherService.WeatherProviders
 
                 if (Blocked)
                 {
-                    if ((now - LastBlocked).TotalMinutes > BlockMinutes) // Block is over.
+                    if ((now - LastBlocked).Minutes > BlockMinutes) // Block is over.
                     {
                         Blocked = false;
                     }

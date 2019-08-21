@@ -8,5 +8,6 @@ namespace WeatherService
     public class AppSettings
     {
         public int CacheExpirationScanInterval { get; set; }
+        public int CacheSizeLimit { get; set; }
     }
 }

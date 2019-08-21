@@ -69,6 +69,7 @@ namespace WeatherService
             services.AddMemoryCache(options =>
             {
                 options.ExpirationScanFrequency = TimeSpan.FromSeconds(appSettings.CacheExpirationScanInterval);
+                options.SizeLimit = appSettings.CacheSizeLimit;
             });
 
             // Configure DI for application services.

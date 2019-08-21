@@ -8,6 +8,7 @@ using System.Globalization;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
+using WeatherService.Extensions;
 using WeatherService.Models;
 
 namespace WeatherService.WeatherProviders
@@ -35,7 +36,7 @@ namespace WeatherService.WeatherProviders
             response = result.ToResponseModel();
             response.Units = units.ToString();
             response.Expiration = DateTime.UtcNow.AddMinutes(UpdateMinutes);
-            Cache.Set(coords, response, response.Expiration);
+            Cache.Set(coords, response, response.Expiration, 1);
             return response;
         }
 
