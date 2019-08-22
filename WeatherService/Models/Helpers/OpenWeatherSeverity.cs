@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Serilog;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -7,9 +8,13 @@ namespace WeatherService.Models.Helpers
 {
     public static class OpenWeatherSeverity
     {
-        private static Dictionary<int, int> WeatherIdToSeverity = new Dictionary<int, int>();
+        private static readonly Dictionary<int, int> WeatherIdToSeverity = new Dictionary<int, int>();
         static OpenWeatherSeverity()
         {
+            // Assign severity levels to each weather type here. This is used to find which weather type represents each day
+            // since we get an hourly forecast from the API.
+            // More info: https://openweathermap.org/weather-conditions
+
             // Clear.
             Add(800, 0);
 
@@ -27,7 +32,7 @@ namespace WeatherService.Models.Helpers
             Add(741, 10);
             Add(751, 10);
             Add(761, 10);
-            Add(762, 17); // Volcanic ash.
+            Add(762, 17); // Volcanic ash. Sounds really bad for the lungs.
             Add(771, 10);
             Add(781, 1000); // Tornado... Sounds dangerous.
 
@@ -82,7 +87,13 @@ namespace WeatherService.Models.Helpers
 
         public static int GetSeverity(int weatherId)
         {
-            return WeatherIdToSeverity[weatherId];
+            if (WeatherIdToSeverity.TryGetValue(weatherId, out int severity))
+            {
+                return severity;
+            }
+
+            Log.Warning("OpenWeatherSeverity: No severity assigned to weatherId {0}. Returning -1.", weatherId);
+            return -1;
         }
 
         private static void Add(int weatherId, int severity)
