@@ -34,6 +34,7 @@ namespace WeatherService.WeatherProviders
                 return null;
 
             response = result.ToResponseModel();
+            response.Provider = Name;
             response.Units = units.ToString();
             response.Expiration = DateTime.UtcNow.AddMinutes(UpdateMinutes);
             Cache.Set(coords, response, response.Expiration, 1);

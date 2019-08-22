@@ -85,7 +85,6 @@ namespace WeatherService.Models
         {
             ResponseModel response = new ResponseModel()
             {
-                Provider = "OpenWeather",
                 CityName = city.name,
                 Country = city.country,
                 Coords = new WeatherProviders.Coords(city.coord.lat, city.coord.lon),

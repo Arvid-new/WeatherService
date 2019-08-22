@@ -65,6 +65,7 @@ namespace WeatherService.WeatherProviders
             }
 
             response = hourly.ToResponseModel(current);
+            response.Provider = Name;
             response.Units = unitsTxt;
             response.Expiration = DateTime.UtcNow.AddMinutes(UpdateMinutes);
             Cache.Set(coords, response, response.Expiration, 1);

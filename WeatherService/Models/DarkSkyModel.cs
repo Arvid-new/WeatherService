@@ -122,7 +122,6 @@ namespace WeatherService.Models
         {
             ResponseModel response = new ResponseModel()
             {
-                Provider = "DarkSky",
                 CityName = null,
                 Coords = new WeatherProviders.Coords(latitude, longitude),
                 Country = null,
