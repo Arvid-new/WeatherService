@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using WeatherService.Models.Helpers;
 
 namespace WeatherService.Models
 {
@@ -116,11 +117,7 @@ namespace WeatherService.Models
                     WeatherDescription = list[j].weather[0].description
                 };
 
-                Dictionary<string, int> weatherTypeCount = new Dictionary<string, int>();
-                weatherTypeCount[list[j].weather[0].main] = 1;
-
-                Dictionary<string, int> weatherDescCount = new Dictionary<string, int>();
-                weatherDescCount[list[j].weather[0].description] = 1;
+                int primaryWeatherSeverity = OpenWeatherSeverity.GetSeverity(list[j].weather[0].id);
 
                 float degRads = DegToRad(list[j].wind.deg);
                 float degSinSum = MathF.Sin(degRads);
@@ -141,22 +138,12 @@ namespace WeatherService.Models
                     if (list[j].main.temp > forecast.TempMax)
                         forecast.TempMax = list[j].main.temp;
 
-                    if (weatherTypeCount.ContainsKey(list[j].weather[0].main))
+                    int severity = OpenWeatherSeverity.GetSeverity(list[j].weather[0].id);
+                    if (severity > primaryWeatherSeverity)
                     {
-                        weatherTypeCount[list[j].weather[0].main]++;
-                    }
-                    else
-                    {
-                        weatherTypeCount[list[j].weather[0].main] = 1;
-                    }
-
-                    if (weatherDescCount.ContainsKey(list[j].weather[0].description))
-                    {
-                        weatherDescCount[list[j].weather[0].description]++;
-                    }
-                    else
-                    {
-                        weatherDescCount[list[j].weather[0].description] = 1;
+                        primaryWeatherSeverity = severity;
+                        forecast.WeatherType = list[j].weather[0].main;
+                        forecast.WeatherDescription = list[j].weather[0].description;
                     }
 
                     degRads = DegToRad(list[j].wind.deg);
@@ -167,9 +154,6 @@ namespace WeatherService.Models
                     cloudinessSum += list[j].clouds.all;
                     windSpeedSum += list[j].wind.speed;
                 }
-
-                forecast.WeatherType = weatherTypeCount.Aggregate((l, r) => l.Value > r.Value ? l : r).Key;
-                forecast.WeatherDescription = weatherDescCount.Aggregate((l, r) => l.Value > r.Value ? l : r).Key;
 
                 forecast.WindDeg = RadToDeg(MathF.Atan2(degSinSum / count, degCosSum / count)); // Average angle.
                 if (forecast.WindDeg < 0) // Convert negative angle to positive.
