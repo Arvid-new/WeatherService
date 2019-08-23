@@ -24,7 +24,8 @@ namespace WeatherService.WeatherProviders
         {
             ApiKeys keys = keysOpts.Value;
 
-            // Add weather providers here.
+            // Add weather providers here. Comment them out to disable them.
+
             Providers.Add(WeatherProvider.OpenWeather, new OpenWeather("OpenWeather", keys.OpenWeather, cache));
             Providers.Add(WeatherProvider.DarkSky, new DarkSky("DarkSky", keys.DarkSky, cache));
             //Providers.Add(WeatherProvider.AccuWeather, new AccuWeather("AccuWeather", Keys.AccuWeather, cache));

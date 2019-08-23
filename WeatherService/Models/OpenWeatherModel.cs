@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using WeatherService.Models.Helpers;
+using WeatherService.WeatherProviders.Icons;
 
 namespace WeatherService.Models
 {
@@ -93,6 +94,7 @@ namespace WeatherService.Models
                     Date = current.dt,
                     Temp = current.main.temp,
                     Humidity = current.main.humidity,
+                    Icon = Icons.OpenWeather.GetIcon(current.weather[0].icon).ToString(),
                     WeatherType = current.weather[0].main,
                     WeatherDescription = current.weather[0].description,
                     Cloudiness = current.clouds.all,
@@ -112,6 +114,7 @@ namespace WeatherService.Models
                     Date = list[j].dt,
                     TempMax = float.MinValue,
                     TempMin = float.MaxValue,
+                    Icon = Icons.OpenWeather.GetIcon(list[j].weather[0].icon).ToString(),
                     WeatherType = list[j].weather[0].main,
                     WeatherDescription = list[j].weather[0].description
                 };
@@ -141,6 +144,7 @@ namespace WeatherService.Models
                     if (severity > primaryWeatherSeverity)
                     {
                         primaryWeatherSeverity = severity;
+                        forecast.Icon = Icons.OpenWeather.GetIcon(list[j].weather[0].icon).ToString();
                         forecast.WeatherType = list[j].weather[0].main;
                         forecast.WeatherDescription = list[j].weather[0].description;
                     }

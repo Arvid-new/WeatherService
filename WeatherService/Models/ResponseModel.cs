@@ -21,6 +21,7 @@ namespace WeatherService.Models
             public long Date;
             public float? Temp;
             public int? Humidity;
+            public string Icon;
             public string WeatherType;
             public string WeatherDescription;
             public int? Cloudiness;
@@ -36,6 +37,7 @@ namespace WeatherService.Models
             public float? TempMin;
             public float? TempMax;
             public int? Humidity;
+            public string Icon;
             public string WeatherType;
             public string WeatherDescription;
             public int? Cloudiness;

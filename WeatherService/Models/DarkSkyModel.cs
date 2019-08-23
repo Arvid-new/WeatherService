@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using WeatherService.WeatherProviders.Icons;
 
 namespace WeatherService.Models
 {
@@ -131,6 +132,7 @@ namespace WeatherService.Models
                     Temp = currently.temperature,
                     Humidity = currently.humidity == null ? null : (int?)(currently.humidity * 100),
                     Cloudiness = currently.cloudCover == null ? null : (int?)(currently.cloudCover * 100),
+                    Icon = Icons.DarkSky.GetIcon(currently.icon).ToString(),
                     WeatherType = currently.icon,
                     WeatherDescription = currently.summary,
                     WindSpeed = currently.windSpeed,
@@ -149,6 +151,7 @@ namespace WeatherService.Models
                         TempMax = daily.data[i].temperatureMax,
                         TempMin = daily.data[i].temperatureMin,
                         Humidity = daily.data[i].humidity == null ? null : (int?)(daily.data[i].humidity * 100),
+                        Icon = Icons.DarkSky.GetIcon(daily.data[i].icon).ToString(),
                         WeatherType = daily.data[i].icon,
                         WeatherDescription = daily.data[i].summary,
                         Cloudiness = daily.data[i].cloudCover == null ? null : (int?)(daily.data[i].cloudCover * 100),
